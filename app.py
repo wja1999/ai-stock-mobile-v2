@@ -1,4 +1,3 @@
-import os
 import re
 import html as html_lib
 import xml.etree.ElementTree as ET
@@ -36,450 +35,479 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-:root {
-    --text:#111827;
-    --muted:#6b7280;
-    --line:#edf0f5;
-    --red:#ef4444;
-    --orange:#f97316;
-    --green:#16a34a;
-    --blue:#2563eb;
-    --shadow:0 10px 28px rgba(15,23,42,.07);
+html, body, .stApp {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+* {
+    box-sizing: border-box !important;
+}
+
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stMainBlockContainer"],
+.block-container {
+    width: 100% !important;
+    max-width: 430px !important;
+    overflow-x: hidden !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.element-container,
+.stMarkdown,
+[data-testid="stMarkdownContainer"],
+[data-testid="stVerticalBlock"],
+[data-testid="column"] {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+pre, code {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-x: hidden !important;
 }
 
 html, body, [class*="css"] {
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif!important;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif !important;
 }
 
 .stApp {
     background:
-        radial-gradient(circle at 8% 0%,rgba(239,68,68,.10),transparent 30%),
-        radial-gradient(circle at 90% 8%,rgba(37,99,235,.10),transparent 32%),
-        linear-gradient(180deg,#fff8f5 0%,#f7f8fb 38%,#fff 100%);
+        radial-gradient(circle at 8% 0%, rgba(239,68,68,.10), transparent 30%),
+        radial-gradient(circle at 90% 8%, rgba(37,99,235,.10), transparent 32%),
+        linear-gradient(180deg, #fff8f5 0%, #f7f8fb 38%, #fff 100%);
 }
 
 .block-container {
-    max-width:430px!important;
-    padding:16px 14px 88px!important;
+    padding: 16px 14px 88px !important;
 }
 
 #MainMenu, footer, header, .stDeployButton {
-    visibility:hidden!important;
-    display:none!important;
+    visibility: hidden !important;
+    display: none !important;
 }
 
 div[data-testid="stToolbar"] {
-    display:none!important;
+    display: none !important;
 }
 
 h1,h2,h3,h4,h5,h6,p,li,span,div {
-    color:var(--text);
+    color: #111827;
 }
 
 .topbar {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin:2px 2px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2px 2px 14px;
 }
 
 .brand {
-    display:flex;
-    align-items:center;
-    gap:10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .logo {
-    width:34px;
-    height:34px;
-    border-radius:10px;
-    background:linear-gradient(135deg,#ef4444,#2563eb);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#fff;
-    font-size:19px;
-    font-weight:900;
-    box-shadow:0 10px 18px rgba(239,68,68,.18);
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(135deg,#ef4444,#2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 19px;
+    font-weight: 900;
+    box-shadow: 0 10px 18px rgba(239,68,68,.18);
 }
 
 .brand-title {
-    font-size:22px;
-    font-weight:950;
-    line-height:1.1;
+    font-size: 22px;
+    font-weight: 950;
+    line-height: 1.1;
 }
 
 .brand-sub {
-    font-size:12px;
-    color:#6b7280;
-    margin-top:3px;
-    font-weight:650;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 3px;
+    font-weight: 650;
 }
 
 .help-btn {
-    padding:8px 10px;
-    border:1px solid #e5e7eb;
-    background:#fff;
-    border-radius:999px;
-    font-size:12px;
-    font-weight:800;
-    color:#4b5563;
-    box-shadow:0 6px 16px rgba(15,23,42,.05);
-}
-
-.input-panel {
-    background:rgba(255,255,255,.96);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:14px;
-    box-shadow:var(--shadow);
-    margin-bottom:12px;
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #4b5563;
+    box-shadow: 0 6px 16px rgba(15,23,42,.05);
 }
 
 .section {
-    background:rgba(255,255,255,.96);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:14px;
-    box-shadow:var(--shadow);
-    margin-top:12px;
+    width: 100%;
+    background: rgba(255,255,255,.96);
+    border: 1px solid #edf0f5;
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 10px 28px rgba(15,23,42,.07);
+    margin-top: 12px;
+    overflow: hidden;
 }
 
 .section-title {
-    font-size:18px;
-    font-weight:950;
-    margin:0 0 12px;
-    display:flex;
-    align-items:center;
-    gap:6px;
+    font-size: 18px;
+    font-weight: 950;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .stForm {
-    background:rgba(255,255,255,.96);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:14px;
-    box-shadow:var(--shadow);
+    width: 100%;
+    background: rgba(255,255,255,.96);
+    border: 1px solid #edf0f5;
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 10px 28px rgba(15,23,42,.07);
+    overflow: hidden;
 }
 
 .stTextInput label,
 .stSelectbox label {
-    color:#6b7280!important;
-    font-weight:850!important;
-    font-size:12px!important;
+    color: #6b7280 !important;
+    font-weight: 850 !important;
+    font-size: 12px !important;
 }
 
 .stTextInput input {
-    height:44px!important;
-    border-radius:13px!important;
-    border:1px solid #e5e7eb!important;
-    background:#fff!important;
-    color:#111827!important;
-    font-size:15px!important;
-    font-weight:850!important;
+    height: 44px !important;
+    border-radius: 13px !important;
+    border: 1px solid #e5e7eb !important;
+    background: #fff !important;
+    color: #111827 !important;
+    font-size: 15px !important;
+    font-weight: 850 !important;
 }
 
 .stSelectbox div[data-baseweb="select"] > div {
-    min-height:44px!important;
-    border-radius:13px!important;
-    border:1px solid #e5e7eb!important;
-    background:#fff!important;
-    color:#111827!important;
-    font-size:15px!important;
-    font-weight:850!important;
+    min-height: 44px !important;
+    border-radius: 13px !important;
+    border: 1px solid #e5e7eb !important;
+    background: #fff !important;
+    color: #111827 !important;
+    font-size: 15px !important;
+    font-weight: 850 !important;
 }
 
-.stButton button {
-    height:48px;
-    border-radius:14px;
-    border:none;
-    background:linear-gradient(90deg,#ff3b3b,#ff6a18);
-    color:#fff!important;
-    font-weight:950;
-    font-size:15px;
-    box-shadow:0 14px 26px rgba(239,68,68,.25);
+.stButton button,
+.stFormSubmitButton button {
+    width: 100%;
+    height: 48px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(90deg,#ff3b3b,#ff6a18);
+    color: #fff !important;
+    font-weight: 950;
+    font-size: 15px;
+    box-shadow: 0 14px 26px rgba(239,68,68,.25);
 }
 
 .support-text {
-    margin-top:10px;
-    color:#6b7280;
-    font-size:12px;
-    font-weight:700;
-    line-height:1.65;
+    margin-top: 10px;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.65;
 }
 
 .chart-title-row {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
 }
 
 .fullscreen-pill {
-    padding:5px 8px;
-    border-radius:999px;
-    border:1px solid #e5e7eb;
-    font-size:11px;
-    color:#6b7280;
-    font-weight:800;
-    background:#fff;
+    padding: 5px 8px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 800;
+    background: #fff;
 }
 
 .score-card {
-    background:linear-gradient(135deg,#fff7f4,#fff);
-    border:1px solid rgba(239,68,68,.14);
-    border-radius:18px;
-    padding:15px;
+    width: 100%;
+    background: linear-gradient(135deg,#fff7f4,#fff);
+    border: 1px solid rgba(239,68,68,.14);
+    border-radius: 18px;
+    padding: 14px;
+    overflow: hidden;
 }
 
-.score-layout {
-    display:grid;
-    grid-template-columns:1.1fr .9fr;
-    gap:12px;
-    align-items:start;
+.score-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.score-label {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 850;
+    margin-bottom: 8px;
 }
 
 .score-num {
-    font-size:42px;
-    line-height:1;
-    font-weight:950;
-    color:#ef4444;
+    font-size: 42px;
+    line-height: 1;
+    font-weight: 950;
+    color: #ef4444;
 }
 
 .score-total {
-    font-size:17px;
-    color:#9ca3af;
-    font-weight:850;
+    font-size: 17px;
+    color: #9ca3af;
+    font-weight: 850;
 }
 
 .score-status {
-    font-size:18px;
-    margin-top:10px;
-    font-weight:950;
+    font-size: 18px;
+    margin-top: 10px;
+    font-weight: 950;
 }
 
 .score-desc {
-    font-size:12px;
-    line-height:1.55;
-    color:#4b5563;
-    margin-top:6px;
-    font-weight:650;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #4b5563;
+    margin-top: 6px;
+    font-weight: 650;
 }
 
 .progress-bg {
-    height:9px;
-    background:#fee2e2;
-    border-radius:999px;
-    overflow:hidden;
-    margin-top:12px;
+    height: 9px;
+    background: #fee2e2;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 12px;
 }
 
 .progress-fill {
-    height:100%;
-    background:linear-gradient(90deg,#ef4444,#f97316);
-    border-radius:999px;
+    height: 100%;
+    background: linear-gradient(90deg,#ef4444,#f97316);
+    border-radius: 999px;
 }
 
-.mini-grid {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
+.score-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
 }
 
 .mini-box {
-    background:rgba(255,255,255,.76);
-    border:1px solid #f0f2f6;
-    border-radius:13px;
-    padding:10px;
+    background: rgba(255,255,255,.82);
+    border: 1px solid #f0f2f6;
+    border-radius: 13px;
+    padding: 10px;
+    min-width: 0;
 }
 
 .mini-label {
-    font-size:11px;
-    color:#6b7280;
-    font-weight:850;
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 850;
 }
 
 .mini-value {
-    margin-top:5px;
-    font-size:17px;
-    font-weight:950;
+    margin-top: 5px;
+    font-size: 17px;
+    font-weight: 950;
 }
 
 .mini-sub {
-    font-size:11px;
-    color:#9ca3af;
-    margin-top:3px;
-    font-weight:700;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 3px;
+    font-weight: 700;
 }
 
 .kpi-row {
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:8px;
-    margin-top:10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 .kpi-box {
-    background:#fff;
-    border:1px solid #edf0f5;
-    border-radius:13px;
-    padding:10px;
+    background: #fff;
+    border: 1px solid #edf0f5;
+    border-radius: 13px;
+    padding: 10px;
+    min-width: 0;
 }
 
 .kpi-label {
-    font-size:11px;
-    color:#6b7280;
-    font-weight:850;
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 850;
 }
 
 .kpi-value {
-    font-size:16px;
-    margin-top:5px;
-    font-weight:950;
+    font-size: 16px;
+    margin-top: 5px;
+    font-weight: 950;
 }
 
 .decision-grid {
-    display:grid;
-    grid-template-columns:1fr;
-    gap:10px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
 }
 
 .decision-card {
-    border-radius:16px;
-    padding:14px;
-    border:1px solid #edf0f5;
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid #edf0f5;
 }
 
 .buy-card {
-    background:linear-gradient(135deg,#effdf4,#ffffff);
+    background: linear-gradient(135deg,#effdf4,#ffffff);
 }
 
 .break-card {
-    background:linear-gradient(135deg,#fff7ed,#ffffff);
+    background: linear-gradient(135deg,#fff7ed,#ffffff);
 }
 
 .risk-card {
-    background:linear-gradient(135deg,#fff1f2,#ffffff);
+    background: linear-gradient(135deg,#fff1f2,#ffffff);
 }
 
 .decision-title {
-    font-size:15px;
-    font-weight:950;
+    font-size: 15px;
+    font-weight: 950;
 }
 
 .decision-price {
-    margin-top:8px;
-    font-size:22px;
-    font-weight:950;
-    color:#ef4444;
+    margin-top: 8px;
+    font-size: 22px;
+    font-weight: 950;
+    color: #ef4444;
 }
 
 .decision-text {
-    margin-top:8px;
-    color:#4b5563;
-    font-size:13px;
-    line-height:1.6;
-    font-weight:700;
+    margin-top: 8px;
+    color: #4b5563;
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 700;
 }
 
 .metric-grid {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
 .metric-card {
-    background:#fff;
-    border:1px solid #edf0f5;
-    border-radius:16px;
-    padding:13px;
-    min-height:88px;
+    background: #fff;
+    border: 1px solid #edf0f5;
+    border-radius: 16px;
+    padding: 13px;
+    min-height: 88px;
 }
 
 .metric-label {
-    color:#6b7280;
-    font-size:12px;
-    font-weight:850;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 850;
 }
 
 .metric-value {
-    margin-top:8px;
-    color:#111827;
-    font-size:22px;
-    font-weight:950;
-    line-height:1.1;
+    margin-top: 8px;
+    color: #111827;
+    font-size: 22px;
+    font-weight: 950;
+    line-height: 1.1;
 }
 
 .metric-sub {
-    color:#9ca3af;
-    font-size:11px;
-    font-weight:700;
-    margin-top:6px;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 6px;
 }
 
 .news-item {
-    background:#fff;
-    border:1px solid #edf0f5;
-    border-radius:14px;
-    padding:12px;
-    margin-bottom:8px;
+    background: #fff;
+    border: 1px solid #edf0f5;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 8px;
 }
 
 .news-item a {
-    color:#2563eb!important;
-    font-size:13px;
-    line-height:1.5;
-    font-weight:850;
-    text-decoration:none;
+    color: #2563eb !important;
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 850;
+    text-decoration: none;
 }
 
 .news-meta {
-    margin-top:6px;
-    color:#9ca3af;
-    font-size:11px;
-    font-weight:700;
+    margin-top: 6px;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .ai-box {
-    background:#fff;
-    border:1px solid #edf0f5;
-    border-radius:16px;
-    padding:14px;
+    background: #fff;
+    border: 1px solid #edf0f5;
+    border-radius: 16px;
+    padding: 14px;
+    overflow: hidden;
 }
 
 [data-testid="stMarkdownContainer"] p,
 [data-testid="stMarkdownContainer"] li {
-    font-size:14px;
-    line-height:1.78;
-    color:#1f2937!important;
+    font-size: 14px;
+    line-height: 1.78;
+    color: #1f2937 !important;
 }
 
 [data-testid="stMarkdownContainer"] h1,
 [data-testid="stMarkdownContainer"] h2,
 [data-testid="stMarkdownContainer"] h3 {
-    font-size:18px!important;
-    color:#111827!important;
-    font-weight:950!important;
-    margin-top:16px!important;
+    font-size: 18px !important;
+    color: #111827 !important;
+    font-weight: 950 !important;
+    margin-top: 16px !important;
 }
 
 .tip {
-    background:#fff7ed;
-    border:1px solid #fed7aa;
-    color:#9a3412;
-    border-radius:14px;
-    padding:12px;
-    font-size:13px;
-    line-height:1.65;
-    font-weight:750;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    border-radius: 14px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.65;
+    font-weight: 750;
 }
 
-@media (max-width:390px) {
-    .score-layout {
-        grid-template-columns:1fr;
-    }
+@media (max-width: 390px) {
     .kpi-row {
-        grid-template-columns:1fr;
+        grid-template-columns: 1fr;
     }
 }
 </style>
@@ -835,7 +863,7 @@ def calculate_score(df: pd.DataFrame, risk: str, news_items):
     }
 
 
-def calculate_trade_map(df: pd.DataFrame, score_info: dict):
+def calculate_trade_map(df: pd.DataFrame):
     latest = df.iloc[-1]
     close = safe_float(latest["close"])
     ma5 = safe_float(latest["ma5"])
@@ -942,16 +970,6 @@ def build_kline_chart(df: pd.DataFrame, ticker: str):
     return fig
 
 
-def mini_box(label, value, sub=""):
-    return f"""
-<div class="mini-box">
-    <div class="mini-label">{html_lib.escape(str(label))}</div>
-    <div class="mini-value">{html_lib.escape(str(value))}</div>
-    <div class="mini-sub">{html_lib.escape(str(sub))}</div>
-</div>
-"""
-
-
 def metric_card(label, value, sub=""):
     return f"""
 <div class="metric-card">
@@ -966,36 +984,71 @@ def render_score(score_info):
     total = score_info["total"]
     width = max(0, min(100, total))
 
-    st.markdown(f"""
+    html = f"""
 <div class="score-card">
-    <div class="score-layout">
-        <div>
-            <div style="color:#6b7280;font-size:12px;font-weight:850;margin-bottom:8px;">AI综合评分</div>
-            <span class="score-num">{total}</span>
-            <span class="score-total">/100</span>
+    <div class="score-main">
+        <div class="score-left">
+            <div class="score-label">AI综合评分</div>
+            <div>
+                <span class="score-num">{total}</span>
+                <span class="score-total">/100</span>
+            </div>
             <div class="score-status">{html_lib.escape(score_info["level"])} · {html_lib.escape(score_info["action"])}</div>
             <div class="score-desc">{html_lib.escape(score_info["action_desc"])}</div>
-            <div class="progress-bg"><div class="progress-fill" style="width:{width}%;"></div></div>
+            <div class="progress-bg">
+                <div class="progress-fill" style="width:{width}%;"></div>
+            </div>
         </div>
-        <div class="mini-grid">
-            {mini_box("趋势结构", f'{score_info["trend_score"]}/30', "趋势")}
-            {mini_box("动能指标", f'{score_info["momentum_score"]}/20', "动能")}
-            {mini_box("消息面", f'{score_info["news_score"]}/15', "情绪")}
-            {mini_box("风险控制", f'{score_info["risk_score"]}/15', "风控")}
+
+        <div class="score-right">
+            <div class="mini-box">
+                <div class="mini-label">趋势结构</div>
+                <div class="mini-value">{score_info["trend_score"]}/30</div>
+                <div class="mini-sub">趋势</div>
+            </div>
+            <div class="mini-box">
+                <div class="mini-label">动能指标</div>
+                <div class="mini-value">{score_info["momentum_score"]}/20</div>
+                <div class="mini-sub">动能</div>
+            </div>
+            <div class="mini-box">
+                <div class="mini-label">消息面</div>
+                <div class="mini-value">{score_info["news_score"]}/15</div>
+                <div class="mini-sub">情绪</div>
+            </div>
+            <div class="mini-box">
+                <div class="mini-label">风险控制</div>
+                <div class="mini-value">{score_info["risk_score"]}/15</div>
+                <div class="mini-sub">风控</div>
+            </div>
         </div>
     </div>
+
     <div class="kpi-row">
-        <div class="kpi-box"><div class="kpi-label">利好</div><div class="kpi-value">↑ {score_info["news_pos"]}</div></div>
-        <div class="kpi-box"><div class="kpi-label">风险</div><div class="kpi-value">↓ {score_info["news_neg"]}</div></div>
-        <div class="kpi-box"><div class="kpi-label">最新价</div><div class="kpi-value">{format_price(score_info["latest_close"])}</div></div>
+        <div class="kpi-box">
+            <div class="kpi-label">利好</div>
+            <div class="kpi-value">↑ {score_info["news_pos"]}</div>
+        </div>
+        <div class="kpi-box">
+            <div class="kpi-label">风险</div>
+            <div class="kpi-value">↓ {score_info["news_neg"]}</div>
+        </div>
+        <div class="kpi-box">
+            <div class="kpi-label">最新价</div>
+            <div class="kpi-value">{format_price(score_info["latest_close"])}</div>
+        </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+"""
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def render_news(news_items):
     if not news_items:
-        st.markdown('<div class="tip">暂未抓取到高相关个股新闻，当前分析主要参考K线、成交量、技术指标与AI解读。</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="tip">暂未抓取到高相关个股新闻，当前分析主要参考K线、成交量、技术指标与AI解读。</div>',
+            unsafe_allow_html=True
+        )
         return
 
     for item in news_items:
@@ -1182,7 +1235,7 @@ if df.empty or "close" not in df.columns:
 
 news_items = fetch_news(ticker, stock_name)
 score_info = calculate_score(df, risk, news_items)
-trade_map = calculate_trade_map(df, score_info)
+trade_map = calculate_trade_map(df)
 
 st.markdown(f"""
 <div class="section">
@@ -1190,11 +1243,12 @@ st.markdown(f"""
         <div class="section-title" style="margin-bottom:0;">📈 {html_lib.escape(ticker)} K线趋势</div>
         <div class="fullscreen-pill">全屏</div>
     </div>
-</div>
 """, unsafe_allow_html=True)
 
 fig = build_kline_chart(df, ticker)
 st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown('<div class="section"><div class="section-title">🧠 AI综合评分</div>', unsafe_allow_html=True)
 render_score(score_info)
