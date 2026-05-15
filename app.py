@@ -13,6 +13,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
+# =========================
+# DeepSeek Key
+# Streamlit Cloud Secrets:
+# DEEPSEEK_API_KEY = "你的DeepSeek Key"
+# =========================
 DEEPSEEK_API_KEY = "sk-34bde63deba4488c939677b2a93fbb01"
 
 try:
@@ -33,18 +38,28 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-st.markdown("""
+
+# =========================
+# 防止 HTML 被 Markdown 当代码块展示
+# =========================
+def h(raw_html: str):
+    compact_html = "".join(line.strip() for line in raw_html.splitlines())
+    st.markdown(compact_html, unsafe_allow_html=True)
+
+
+# =========================
+# CSS
+# =========================
+h("""
 <style>
 html, body, .stApp {
     width: 100% !important;
     max-width: 100% !important;
     overflow-x: hidden !important;
 }
-
 * {
     box-sizing: border-box !important;
 }
-
 [data-testid="stAppViewContainer"],
 [data-testid="stMain"],
 [data-testid="stMainBlockContainer"],
@@ -55,11 +70,9 @@ html, body, .stApp {
     margin-right: auto !important;
     overflow-x: hidden !important;
 }
-
 .block-container {
     padding: 16px 14px 104px !important;
 }
-
 .element-container,
 .stMarkdown,
 [data-testid="stMarkdownContainer"],
@@ -69,37 +82,30 @@ html, body, .stApp {
     overflow-x: visible !important;
     overflow-y: visible !important;
 }
-
 [data-testid="column"] > div,
 [data-testid="stVerticalBlock"] > div,
 .element-container > div {
     overflow: visible !important;
 }
-
 html, body, [class*="css"] {
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif !important;
 }
-
 .stApp {
     background:
         radial-gradient(circle at 8% 0%, rgba(239,68,68,.16), transparent 30%),
         radial-gradient(circle at 90% 10%, rgba(251,191,36,.16), transparent 34%),
         linear-gradient(180deg, #fff7f2 0%, #f8f8fb 42%, #fff 100%);
 }
-
 #MainMenu, footer, header, .stDeployButton {
     visibility: hidden !important;
     display: none !important;
 }
-
 div[data-testid="stToolbar"] {
     display: none !important;
 }
-
 h1,h2,h3,h4,h5,h6,p,li,span,div {
     color: #111827;
 }
-
 .stButton button,
 .stFormSubmitButton button {
     width: 100%;
@@ -114,14 +120,12 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
         0 10px 20px rgba(239,68,68,.18),
         inset 0 1px 0 rgba(255,255,255,.18);
 }
-
 .secondary-btn button {
     background: #fff !important;
     color: #ef4444 !important;
     border: 1px solid rgba(239,68,68,.22) !important;
     box-shadow: none !important;
 }
-
 .landing-hero {
     background:
         radial-gradient(circle at 80% 18%, rgba(255,220,120,.42), transparent 35%),
@@ -132,7 +136,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     box-shadow: 0 18px 42px rgba(239,68,68,.12);
     margin-bottom: 18px;
 }
-
 .landing-badge {
     display: inline-flex;
     padding: 7px 12px;
@@ -142,7 +145,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-size: 13px;
     font-weight: 950;
 }
-
 .landing-title {
     font-size: 31px;
     font-weight: 900;
@@ -151,7 +153,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     letter-spacing: -0.6px;
     color: #111827;
 }
-
 .landing-sub {
     margin-top: 12px;
     color: #5b6472;
@@ -159,7 +160,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     line-height: 1.7;
     font-weight: 750;
 }
-
 .price-card {
     margin-top: 24px;
     margin-bottom: 16px;
@@ -168,13 +168,11 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     padding: 20px 18px;
     box-shadow: 0 18px 36px rgba(239,68,68,.26);
 }
-
 .price-label {
     color: rgba(255,255,255,.88);
     font-size: 13px;
     font-weight: 850;
 }
-
 .price-main {
     margin-top: 8px;
     color: #fff;
@@ -182,13 +180,11 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-weight: 950;
     line-height: 1;
 }
-
 .price-main-small {
     color: #fff;
     font-size: 18px;
     font-weight: 900;
 }
-
 .price-desc {
     margin-top: 12px;
     color: rgba(255,255,255,.95);
@@ -196,7 +192,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     line-height: 1.55;
     font-weight: 850;
 }
-
 .landing-card {
     background: rgba(255,255,255,.96);
     border: 1px solid #edf0f5;
@@ -205,19 +200,16 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     box-shadow: 0 12px 30px rgba(15,23,42,.07);
     margin-top: 18px;
 }
-
 .landing-section-title {
     font-size: 19px;
     font-weight: 950;
     margin-bottom: 12px;
 }
-
 .benefit-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
-
 .benefit-item {
     background: linear-gradient(135deg,#fff7f4,#fff);
     border: 1px solid rgba(239,68,68,.10);
@@ -225,17 +217,14 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     padding: 13px;
     min-height: 96px;
 }
-
 .benefit-icon {
     font-size: 24px;
     margin-bottom: 8px;
 }
-
 .benefit-title {
     font-size: 15px;
     font-weight: 950;
 }
-
 .benefit-desc {
     margin-top: 5px;
     color: #6b7280;
@@ -243,45 +232,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     line-height: 1.45;
     font-weight: 700;
 }
-
+.hot-stock-row,
 .unlock-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 16px;
-    padding: 13px;
-    margin-top: 10px;
-}
-
-.unlock-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 13px;
-    background: linear-gradient(135deg,#f59e0b,#ef4444);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 950;
-    flex-shrink: 0;
-}
-
-.unlock-title {
-    font-size: 15px;
-    font-weight: 950;
-}
-
-.unlock-desc {
-    margin-top: 3px;
-    font-size: 12px;
-    color: #7c2d12;
-    line-height: 1.45;
-    font-weight: 700;
-}
-
-.hot-stock-row {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -291,8 +243,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     padding: 13px;
     margin-top: 10px;
 }
-
-.hot-icon {
+.hot-icon,
+.unlock-icon {
     width: 38px;
     height: 38px;
     border-radius: 13px;
@@ -304,20 +256,19 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     justify-content: center;
     flex-shrink: 0;
 }
-
-.hot-title {
+.hot-title,
+.unlock-title {
     font-size: 15px;
     font-weight: 950;
 }
-
-.hot-desc {
+.hot-desc,
+.unlock-desc {
     margin-top: 3px;
     color: #6b7280;
     font-size: 12px;
     line-height: 1.45;
     font-weight: 700;
 }
-
 .bottom-cta {
     position: fixed;
     bottom: 0;
@@ -331,20 +282,17 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     border-top: 1px solid rgba(229,231,235,.9);
     z-index: 999;
 }
-
 .topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 2px 2px 14px;
 }
-
 .brand {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-
 .logo {
     width: 34px;
     height: 34px;
@@ -358,20 +306,17 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-weight: 900;
     box-shadow: 0 10px 18px rgba(239,68,68,.18);
 }
-
 .brand-title {
     font-size: 22px;
     font-weight: 950;
     line-height: 1.1;
 }
-
 .brand-sub {
     font-size: 12px;
     color: #6b7280;
     margin-top: 3px;
     font-weight: 650;
 }
-
 .help-btn {
     padding: 8px 10px;
     border: 1px solid #e5e7eb;
@@ -382,7 +327,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     color: #4b5563;
     box-shadow: 0 6px 16px rgba(15,23,42,.05);
 }
-
 .section-title {
     font-size: 18px;
     font-weight: 950;
@@ -391,7 +335,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     align-items: center;
     gap: 6px;
 }
-
 .stForm {
     width: 100%;
     background: rgba(255,255,255,.96);
@@ -401,14 +344,12 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     box-shadow: 0 10px 28px rgba(15,23,42,.07);
     overflow: visible !important;
 }
-
 .stTextInput label,
 .stSelectbox label {
     color: #6b7280 !important;
     font-weight: 850 !important;
     font-size: 12px !important;
 }
-
 .stTextInput input {
     height: 44px !important;
     border-radius: 13px !important;
@@ -418,7 +359,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-size: 15px !important;
     font-weight: 850 !important;
 }
-
 .stSelectbox div[data-baseweb="select"] > div {
     min-height: 44px !important;
     border-radius: 13px !important;
@@ -428,7 +368,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-size: 15px !important;
     font-weight: 850 !important;
 }
-
 .support-text {
     margin-top: 10px;
     color: #6b7280;
@@ -436,7 +375,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-weight: 700;
     line-height: 1.65;
 }
-
 .score-card {
     width: 100%;
     background: linear-gradient(135deg,#fff7f4,#fff);
@@ -446,33 +384,28 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     overflow: visible !important;
     height: auto !important;
 }
-
 .score-label {
     color: #6b7280;
     font-size: 12px;
     font-weight: 850;
     margin-bottom: 8px;
 }
-
 .score-num {
     font-size: 42px;
     line-height: 1;
     font-weight: 950;
     color: #ef4444;
 }
-
 .score-total {
     font-size: 17px;
     color: #9ca3af;
     font-weight: 850;
 }
-
 .score-status {
     font-size: 18px;
     margin-top: 10px;
     font-weight: 950;
 }
-
 .score-desc {
     font-size: 12px;
     line-height: 1.55;
@@ -480,7 +413,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     margin-top: 6px;
     font-weight: 650;
 }
-
 .progress-bg {
     height: 9px;
     background: #fee2e2;
@@ -488,13 +420,11 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     overflow: hidden;
     margin-top: 12px;
 }
-
 .progress-fill {
     height: 100%;
     background: linear-gradient(90deg,#ef4444,#f97316);
     border-radius: 999px;
 }
-
 .metric-card {
     background: #fff;
     border: 1px solid #edf0f5;
@@ -504,13 +434,11 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     height: auto !important;
     overflow: visible !important;
 }
-
 .metric-label {
     color: #6b7280;
     font-size: 12px;
     font-weight: 850;
 }
-
 .metric-value {
     margin-top: 8px;
     color: #111827;
@@ -519,14 +447,12 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     line-height: 1.1;
     word-break: break-word;
 }
-
 .metric-sub {
     color: #9ca3af;
     font-size: 11px;
     font-weight: 700;
     margin-top: 6px;
 }
-
 .decision-card {
     border-radius: 16px;
     padding: 14px;
@@ -535,31 +461,25 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     overflow: visible !important;
     height: auto !important;
 }
-
 .buy-card {
     background: linear-gradient(135deg,#effdf4,#ffffff);
 }
-
 .break-card {
     background: linear-gradient(135deg,#fff7ed,#ffffff);
 }
-
 .risk-card {
     background: linear-gradient(135deg,#fff1f2,#ffffff);
 }
-
 .decision-title {
     font-size: 15px;
     font-weight: 950;
 }
-
 .decision-price {
     margin-top: 8px;
     font-size: 22px;
     font-weight: 950;
     color: #ef4444;
 }
-
 .decision-text {
     margin-top: 8px;
     color: #4b5563;
@@ -567,7 +487,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     line-height: 1.6;
     font-weight: 700;
 }
-
 .news-item {
     background: #fff;
     border: 1px solid #edf0f5;
@@ -577,7 +496,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     overflow: visible !important;
     height: auto !important;
 }
-
 .news-item a {
     color: #2563eb !important;
     font-size: 13px;
@@ -585,14 +503,12 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-weight: 850;
     text-decoration: none;
 }
-
 .news-meta {
     margin-top: 6px;
     color: #9ca3af;
     font-size: 11px;
     font-weight: 700;
 }
-
 .ai-box {
     background: #fff;
     border: 1px solid #edf0f5;
@@ -601,14 +517,12 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     overflow: visible !important;
     height: auto !important;
 }
-
 [data-testid="stMarkdownContainer"] p,
 [data-testid="stMarkdownContainer"] li {
     font-size: 14px;
     line-height: 1.78;
     color: #1f2937 !important;
 }
-
 [data-testid="stMarkdownContainer"] h1,
 [data-testid="stMarkdownContainer"] h2,
 [data-testid="stMarkdownContainer"] h3 {
@@ -617,7 +531,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-weight: 950 !important;
     margin-top: 16px !important;
 }
-
 .tip {
     background: #fff7ed;
     border: 1px solid #fed7aa;
@@ -629,9 +542,12 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     font-weight: 750;
 }
 </style>
-""", unsafe_allow_html=True)
+""")
 
 
+# =========================
+# 页面状态
+# =========================
 if "page" not in st.session_state:
     st.session_state.page = "landing"
 
@@ -644,148 +560,77 @@ def go_landing():
     st.session_state.page = "landing"
 
 
+# =========================
+# 宣传页
+# =========================
 def render_landing_page():
-    st.markdown(
-        """
+    h("""
 <div class="landing-hero">
-    <div class="landing-badge">🔥 开户专属权益 · 限时免费</div>
-    <div class="landing-title">AI股票分析平台<br>开通账户免费用</div>
-    <div class="landing-sub">
-        输入股票代码，即可生成真实K线趋势、AI综合评分、买卖点地图与小白可读交易计划。
-    </div>
+<div class="landing-badge">🔥 开户专属权益 · 限时免费</div>
+<div class="landing-title">AI股票分析平台<br>开通账户免费用</div>
+<div class="landing-sub">输入股票代码，即可生成真实K线趋势、AI综合评分、买卖点地图与小白可读交易计划。</div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+""")
 
-    st.markdown(
-        """
+    h("""
 <div class="price-card">
-    <div class="price-label">工具权益价值</div>
-    <div class="price-main">988 <span class="price-main-small">元/年</span></div>
-    <div class="price-desc">完成股票开户后，即可解锁全年免费使用权益。</div>
+<div class="price-label">工具权益价值</div>
+<div class="price-main">988 <span class="price-main-small">元/年</span></div>
+<div class="price-desc">完成股票开户后，即可解锁全年免费使用权益。</div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+""")
 
     st.button("立即开户免费使用", on_click=go_app, use_container_width=True)
 
-    st.markdown('<div class="secondary-btn">', unsafe_allow_html=True)
+    h('<div class="secondary-btn">')
     st.button("先体验AI分析", on_click=go_app, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    h('</div>')
 
-    st.markdown(
-        """
+    h("""
 <div class="landing-card">
-    <div class="landing-section-title">近期热门AI分析</div>
-
-    <div class="hot-stock-row">
-        <div class="hot-icon">🔥</div>
-        <div>
-            <div class="hot-title">寒武纪</div>
-            <div class="hot-desc">AI评分 87分 · 趋势偏强 · 放量突破</div>
-        </div>
-    </div>
-
-    <div class="hot-stock-row">
-        <div class="hot-icon">📈</div>
-        <div>
-            <div class="hot-title">中国长城</div>
-            <div class="hot-desc">AI评分 82分 · 算力方向热度提升</div>
-        </div>
-    </div>
-
-    <div class="hot-stock-row">
-        <div class="hot-icon">🚀</div>
-        <div>
-            <div class="hot-title">中际旭创</div>
-            <div class="hot-desc">AI评分 79分 · 光模块趋势修复</div>
-        </div>
-    </div>
+<div class="landing-section-title">近期热门AI分析</div>
+<div class="hot-stock-row"><div class="hot-icon">🔥</div><div><div class="hot-title">寒武纪</div><div class="hot-desc">AI评分 87分 · 趋势偏强 · 放量突破</div></div></div>
+<div class="hot-stock-row"><div class="hot-icon">📈</div><div><div class="hot-title">中国长城</div><div class="hot-desc">AI评分 82分 · 算力方向热度提升</div></div></div>
+<div class="hot-stock-row"><div class="hot-icon">🚀</div><div><div class="hot-title">中际旭创</div><div class="hot-desc">AI评分 79分 · 光模块趋势修复</div></div></div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+""")
 
-    st.markdown(
-        """
+    h("""
 <div class="landing-card">
-    <div class="landing-section-title">你将免费获得什么</div>
-    <div class="benefit-grid">
-        <div class="benefit-item">
-            <div class="benefit-icon">📈</div>
-            <div class="benefit-title">真实K线趋势</div>
-            <div class="benefit-desc">自动读取行情数据，展示价格与成交量变化。</div>
-        </div>
-        <div class="benefit-item">
-            <div class="benefit-icon">🧠</div>
-            <div class="benefit-title">AI综合评分</div>
-            <div class="benefit-desc">从趋势、动能、资金、风险、消息面综合判断。</div>
-        </div>
-        <div class="benefit-item">
-            <div class="benefit-icon">🎯</div>
-            <div class="benefit-title">买卖点地图</div>
-            <div class="benefit-desc">给出观察买点、突破确认点和风险止损线。</div>
-        </div>
-        <div class="benefit-item">
-            <div class="benefit-icon">🤖</div>
-            <div class="benefit-title">小白解读</div>
-            <div class="benefit-desc">不用看复杂指标，直接理解机会和风险。</div>
-        </div>
-    </div>
+<div class="landing-section-title">你将免费获得什么</div>
+<div class="benefit-grid">
+<div class="benefit-item"><div class="benefit-icon">📈</div><div class="benefit-title">真实K线趋势</div><div class="benefit-desc">自动读取行情数据，展示价格与成交量变化。</div></div>
+<div class="benefit-item"><div class="benefit-icon">🧠</div><div class="benefit-title">AI综合评分</div><div class="benefit-desc">从趋势、动能、资金、风险、消息面综合判断。</div></div>
+<div class="benefit-item"><div class="benefit-icon">🎯</div><div class="benefit-title">买卖点地图</div><div class="benefit-desc">给出观察买点、突破确认点和风险止损线。</div></div>
+<div class="benefit-item"><div class="benefit-icon">🤖</div><div class="benefit-title">小白解读</div><div class="benefit-desc">不用看复杂指标，直接理解机会和风险。</div></div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+</div>
+""")
 
-    st.markdown(
-        """
+    h("""
 <div class="landing-card">
-    <div class="landing-section-title">开户后使用路径</div>
-    <div class="unlock-row">
-        <div class="unlock-icon">1</div>
-        <div>
-            <div class="unlock-title">完成股票开户</div>
-            <div class="unlock-desc">开通账户后解锁AI分析工具权益。</div>
-        </div>
-    </div>
-    <div class="unlock-row">
-        <div class="unlock-icon">2</div>
-        <div>
-            <div class="unlock-title">输入股票代码</div>
-            <div class="unlock-desc">支持A股与部分美股代码查询。</div>
-        </div>
-    </div>
-    <div class="unlock-row">
-        <div class="unlock-icon">3</div>
-        <div>
-            <div class="unlock-title">查看AI交易计划</div>
-            <div class="unlock-desc">快速获得评分、趋势和买卖点参考。</div>
-        </div>
-    </div>
+<div class="landing-section-title">开户后使用路径</div>
+<div class="unlock-row"><div class="unlock-icon">1</div><div><div class="unlock-title">完成股票开户</div><div class="unlock-desc">开通账户后解锁AI分析工具权益。</div></div></div>
+<div class="unlock-row"><div class="unlock-icon">2</div><div><div class="unlock-title">输入股票代码</div><div class="unlock-desc">支持A股与部分美股代码查询。</div></div></div>
+<div class="unlock-row"><div class="unlock-icon">3</div><div><div class="unlock-title">查看AI交易计划</div><div class="unlock-desc">快速获得评分、趋势和买卖点参考。</div></div></div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+""")
 
-    st.markdown(
-        """
+    h("""
 <div class="landing-card">
-    <div class="landing-section-title">为什么值得开户体验</div>
-    <div class="tip">
-        传统看盘需要理解K线、均线、成交量、MACD、KDJ、消息面等多个维度。这个工具会把复杂信息整理成小白能看懂的交易观察计划，帮助你更快判断机会和风险。
-    </div>
+<div class="landing-section-title">为什么值得开户体验</div>
+<div class="tip">传统看盘需要理解K线、均线、成交量、MACD、KDJ、消息面等多个维度。这个工具会把复杂信息整理成小白能看懂的交易观察计划，帮助你更快判断机会和风险。</div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+""")
 
-    st.markdown('<div class="bottom-cta">', unsafe_allow_html=True)
+    h('<div class="bottom-cta">')
     st.button("开户解锁 988元/年权益", on_click=go_app, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    h('</div>')
 
 
+# =========================
+# 工具函数
+# =========================
 def is_valid_key() -> bool:
     return bool(
         DEEPSEEK_API_KEY
@@ -1243,39 +1088,28 @@ def build_kline_chart(df: pd.DataFrame, ticker: str):
 
 
 def metric_card(label, value, sub=""):
-    st.markdown(
-        f"""
+    h(f"""
 <div class="metric-card">
-    <div class="metric-label">{html_lib.escape(str(label))}</div>
-    <div class="metric-value">{html_lib.escape(str(value))}</div>
-    <div class="metric-sub">{html_lib.escape(str(sub))}</div>
+<div class="metric-label">{html_lib.escape(str(label))}</div>
+<div class="metric-value">{html_lib.escape(str(value))}</div>
+<div class="metric-sub">{html_lib.escape(str(sub))}</div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+""")
 
 
 def render_score(score_info):
     total = score_info["total"]
     width = max(0, min(100, total))
 
-    st.markdown(
-        f"""
+    h(f"""
 <div class="score-card">
-    <div class="score-label">AI综合评分</div>
-    <div>
-        <span class="score-num">{total}</span>
-        <span class="score-total">/100</span>
-    </div>
-    <div class="score-status">{html_lib.escape(score_info["level"])} · {html_lib.escape(score_info["action"])}</div>
-    <div class="score-desc">{html_lib.escape(score_info["action_desc"])}</div>
-    <div class="progress-bg">
-        <div class="progress-fill" style="width:{width}%;"></div>
-    </div>
+<div class="score-label">AI综合评分</div>
+<div><span class="score-num">{total}</span><span class="score-total">/100</span></div>
+<div class="score-status">{html_lib.escape(score_info["level"])} · {html_lib.escape(score_info["action"])}</div>
+<div class="score-desc">{html_lib.escape(score_info["action_desc"])}</div>
+<div class="progress-bg"><div class="progress-fill" style="width:{width}%;"></div></div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+""")
 
     items = [
         ("趋势结构", f'{score_info["trend_score"]}/30', "趋势"),
@@ -1296,10 +1130,7 @@ def render_score(score_info):
 
 def render_news(news_items):
     if not news_items:
-        st.markdown(
-            '<div class="tip">暂未抓取到高相关个股新闻，当前分析主要参考K线、成交量、技术指标与AI解读。</div>',
-            unsafe_allow_html=True
-        )
+        h('<div class="tip">暂未抓取到高相关个股新闻，当前分析主要参考K线、成交量、技术指标与AI解读。</div>')
         return
 
     for item in news_items:
@@ -1307,12 +1138,12 @@ def render_news(news_items):
         link = item.get("link", "")
         source = html_lib.escape(item.get("source", "新闻源"))
 
-        st.markdown(f"""
+        h(f"""
 <div class="news-item">
-    <a href="{link}" target="_blank">{title}</a>
-    <div class="news-meta">{source}</div>
+<a href="{link}" target="_blank">{title}</a>
+<div class="news-meta">{source}</div>
 </div>
-""", unsafe_allow_html=True)
+""")
 
 
 def fallback_analysis(ticker, stock_name, score_info, trade_map):
@@ -1424,24 +1255,24 @@ def call_ai_analysis(ticker, stock_name, risk, df, score_info, trade_map, news_i
         return fallback_analysis(ticker, stock_name, score_info, trade_map) + f"\n\n> AI接口暂时失败，已使用本地稳定分析结果。错误信息：{str(e)}"
 
 
+# =========================
+# 功能页
+# =========================
 def render_app_page():
-    st.markdown("""
+    h("""
 <div class="topbar">
-    <div class="brand">
-        <div class="logo">📊</div>
-        <div>
-            <div class="brand-title">AI股票分析平台</div>
-            <div class="brand-sub">智能分析 · 快速决策 · 小白可读</div>
-        </div>
-    </div>
-    <div class="help-btn">已解锁</div>
+<div class="brand">
+<div class="logo">📊</div>
+<div><div class="brand-title">AI股票分析平台</div><div class="brand-sub">智能分析 · 快速决策 · 小白可读</div></div>
 </div>
-""", unsafe_allow_html=True)
+<div class="help-btn">已解锁</div>
+</div>
+""")
 
     st.button("返回权益页", on_click=go_landing, use_container_width=True)
 
     with st.form("stock_form"):
-        st.markdown('<div class="section-title">⚙️ 参数设置</div>', unsafe_allow_html=True)
+        h('<div class="section-title">⚙️ 参数设置</div>')
 
         c1, c2 = st.columns(2)
         with c1:
@@ -1457,18 +1288,11 @@ def render_app_page():
 
         start_btn = st.form_submit_button("🚀 开始分析")
 
-        st.markdown("""
-<div class="support-text">
-A股支持：000066、000066.SZ、601881、601881.SS ｜ 美股支持：AAPL、NVDA、TSLA
-</div>
-""", unsafe_allow_html=True)
+        h('<div class="support-text">A股支持：000066、000066.SZ、601881、601881.SS ｜ 美股支持：AAPL、NVDA、TSLA</div>')
 
     if not start_btn:
-        st.markdown('<div class="section-title">📱 使用说明</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="tip">输入股票代码后，将按手机端阅读顺序展示 K线图、AI评分、买卖点地图、技术指标、消息面和AI解读。</div>',
-            unsafe_allow_html=True
-        )
+        h('<div class="section-title">📱 使用说明</div>')
+        h('<div class="tip">输入股票代码后，将按手机端阅读顺序展示 K线图、AI评分、买卖点地图、技术指标、消息面和AI解读。</div>')
         st.stop()
 
     ticker = normalize_ticker(raw_ticker)
@@ -1490,40 +1314,40 @@ A股支持：000066、000066.SZ、601881、601881.SS ｜ 美股支持：AAPL、N
     score_info = calculate_score(df, risk, news_items)
     trade_map = calculate_trade_map(df)
 
-    st.markdown(f'<div class="section-title">📈 {html_lib.escape(ticker)} K线趋势</div>', unsafe_allow_html=True)
+    h(f'<div class="section-title">📈 {html_lib.escape(ticker)} K线趋势</div>')
     fig = build_kline_chart(df, ticker)
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "responsive": True})
 
-    st.markdown('<div class="section-title">🧠 AI综合评分</div>', unsafe_allow_html=True)
+    h('<div class="section-title">🧠 AI综合评分</div>')
     render_score(score_info)
 
-    st.markdown('<div class="section-title">🎯 买卖点地图</div>', unsafe_allow_html=True)
+    h('<div class="section-title">🎯 买卖点地图</div>')
 
-    st.markdown(f"""
+    h(f"""
 <div class="decision-card buy-card">
-    <div class="decision-title">🟢 观察买点</div>
-    <div class="decision-price">{format_price(trade_map["watch_low"])} - {format_price(trade_map["watch_high"])}</div>
-    <div class="decision-text">价格回到短期均线附近，并且没有继续放量下跌时，再观察低吸机会。</div>
+<div class="decision-title">🟢 观察买点</div>
+<div class="decision-price">{format_price(trade_map["watch_low"])} - {format_price(trade_map["watch_high"])}</div>
+<div class="decision-text">价格回到短期均线附近，并且没有继续放量下跌时，再观察低吸机会。</div>
 </div>
-""", unsafe_allow_html=True)
+""")
 
-    st.markdown(f"""
+    h(f"""
 <div class="decision-card break-card">
-    <div class="decision-title">🚀 突破确认点</div>
-    <div class="decision-price">{format_price(trade_map["breakout"])}</div>
-    <div class="decision-text">放量突破近期高点，说明短线资金可能重新增强；没有放量则谨慎。</div>
+<div class="decision-title">🚀 突破确认点</div>
+<div class="decision-price">{format_price(trade_map["breakout"])}</div>
+<div class="decision-text">放量突破近期高点，说明短线资金可能重新增强；没有放量则谨慎。</div>
 </div>
-""", unsafe_allow_html=True)
+""")
 
-    st.markdown(f"""
+    h(f"""
 <div class="decision-card risk-card">
-    <div class="decision-title">🔴 风险止损线</div>
-    <div class="decision-price">{format_price(trade_map["stop_loss"])}</div>
-    <div class="decision-text">跌破该位置说明短线结构转弱，优先控制风险，不硬扛。</div>
+<div class="decision-title">🔴 风险止损线</div>
+<div class="decision-price">{format_price(trade_map["stop_loss"])}</div>
+<div class="decision-text">跌破该位置说明短线结构转弱，优先控制风险，不硬扛。</div>
 </div>
-""", unsafe_allow_html=True)
+""")
 
-    st.markdown('<div class="section-title">📌 技术指标摘要</div>', unsafe_allow_html=True)
+    h('<div class="section-title">📌 技术指标摘要</div>')
 
     tech_items = [
         ("MA5", format_price(score_info["ma5"]), "5日均线"),
@@ -1539,10 +1363,10 @@ A股支持：000066、000066.SZ、601881、601881.SS ｜ 美股支持：AAPL、N
         with cols[i % 2]:
             metric_card(*item)
 
-    st.markdown('<div class="section-title">📰 个股消息面</div>', unsafe_allow_html=True)
+    h('<div class="section-title">📰 个股消息面</div>')
     render_news(news_items)
 
-    st.markdown('<div class="section-title">🤖 AI小白解读</div>', unsafe_allow_html=True)
+    h('<div class="section-title">🤖 AI小白解读</div>')
 
     analysis_text = call_ai_analysis(
         ticker=ticker,
@@ -1554,9 +1378,9 @@ A股支持：000066、000066.SZ、601881、601881.SS ｜ 美股支持：AAPL、N
         news_items=news_items
     )
 
-    st.markdown('<div class="ai-box">', unsafe_allow_html=True)
+    h('<div class="ai-box">')
     st.markdown(analysis_text)
-    st.markdown('</div>', unsafe_allow_html=True)
+    h('</div>')
 
     with st.expander("查看原始行情数据"):
         st.dataframe(df.tail(30), use_container_width=True)
