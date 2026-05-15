@@ -14,11 +14,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-# =====================================================
-# DeepSeek Key 配置
-# Streamlit Cloud 推荐在 Secrets 里配置：
-# DEEPSEEK_API_KEY = "你的DeepSeek Key"
-# =====================================================
 DEEPSEEK_API_KEY = "sk-34bde63deba4488c939677b2a93fbb01"
 
 try:
@@ -32,10 +27,6 @@ client = OpenAI(
     base_url="https://api.deepseek.com"
 )
 
-
-# =====================================================
-# 页面基础配置：手机端
-# =====================================================
 st.set_page_config(
     page_title="AI股票分析平台",
     page_icon="📊",
@@ -43,339 +34,464 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-
-# =====================================================
-# 手机端 UI 样式
-# =====================================================
-st.markdown(
-    """
+st.markdown("""
 <style>
 :root {
-    --bg: #f7f8fb;
-    --card: #ffffff;
-    --text: #111827;
-    --muted: #6b7280;
-    --red: #ef4444;
-    --green: #16a34a;
-    --blue: #2563eb;
-    --orange: #f97316;
-    --border: #edf0f5;
-    --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#edf0f5;
+    --red:#ef4444;
+    --orange:#f97316;
+    --green:#16a34a;
+    --blue:#2563eb;
+    --shadow:0 10px 28px rgba(15,23,42,.07);
 }
 
 html, body, [class*="css"] {
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif !important;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif!important;
 }
 
 .stApp {
     background:
-        radial-gradient(circle at 10% 0%, rgba(239,68,68,.10), transparent 28%),
-        radial-gradient(circle at 90% 8%, rgba(37,99,235,.10), transparent 30%),
-        linear-gradient(180deg, #fff7f4 0%, #f7f8fb 36%, #ffffff 100%);
-    color: var(--text);
+        radial-gradient(circle at 8% 0%,rgba(239,68,68,.10),transparent 30%),
+        radial-gradient(circle at 90% 8%,rgba(37,99,235,.10),transparent 32%),
+        linear-gradient(180deg,#fff8f5 0%,#f7f8fb 38%,#fff 100%);
 }
 
 .block-container {
-    max-width: 430px !important;
-    padding: 16px 14px 92px !important;
+    max-width:430px!important;
+    padding:16px 14px 88px!important;
 }
 
-#MainMenu, footer, header {
-    visibility: hidden;
+#MainMenu, footer, header, .stDeployButton {
+    visibility:hidden!important;
+    display:none!important;
 }
 
-h1, h2, h3, h4, h5, h6, p, li, span, div {
-    color: var(--text);
+div[data-testid="stToolbar"] {
+    display:none!important;
 }
 
-.hero {
-    background: linear-gradient(135deg, #fff2ed 0%, #ffffff 100%);
-    border: 1px solid rgba(239,68,68,.14);
-    border-radius: 24px;
-    padding: 20px 18px;
-    box-shadow: var(--shadow);
-    margin-bottom: 14px;
+h1,h2,h3,h4,h5,h6,p,li,span,div {
+    color:var(--text);
 }
 
-.hero-title {
-    font-size: 25px;
-    font-weight: 900;
-    line-height: 1.25;
-    color: #111827;
+.topbar {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin:2px 2px 14px;
 }
 
-.hero-sub {
-    margin-top: 8px;
-    color: #6b7280;
-    font-size: 13px;
-    line-height: 1.55;
-    font-weight: 650;
+.brand {
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
-.tag {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 800;
-    margin-right: 5px;
-    margin-top: 10px;
-    background: #fff1ed;
-    color: #dc2626;
+.logo {
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    background:linear-gradient(135deg,#ef4444,#2563eb);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:19px;
+    font-weight:900;
+    box-shadow:0 10px 18px rgba(239,68,68,.18);
 }
 
-.card {
-    background: rgba(255,255,255,.94);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 15px;
-    margin-top: 13px;
-    box-shadow: var(--shadow);
+.brand-title {
+    font-size:22px;
+    font-weight:950;
+    line-height:1.1;
+}
+
+.brand-sub {
+    font-size:12px;
+    color:#6b7280;
+    margin-top:3px;
+    font-weight:650;
+}
+
+.help-btn {
+    padding:8px 10px;
+    border:1px solid #e5e7eb;
+    background:#fff;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    color:#4b5563;
+    box-shadow:0 6px 16px rgba(15,23,42,.05);
+}
+
+.input-panel {
+    background:rgba(255,255,255,.96);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:14px;
+    box-shadow:var(--shadow);
+    margin-bottom:12px;
+}
+
+.section {
+    background:rgba(255,255,255,.96);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:14px;
+    box-shadow:var(--shadow);
+    margin-top:12px;
 }
 
 .section-title {
-    font-size: 18px;
-    font-weight: 900;
-    margin: 2px 0 12px;
-    color: #111827;
+    font-size:18px;
+    font-weight:950;
+    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:6px;
 }
 
-.tip {
-    background: linear-gradient(90deg, rgba(239,68,68,.08), rgba(249,115,22,.08));
-    border: 1px solid rgba(239,68,68,.12);
-    border-radius: 16px;
-    padding: 13px;
-    color: #7f1d1d;
-    font-size: 13px;
-    line-height: 1.65;
-    font-weight: 700;
+.stForm {
+    background:rgba(255,255,255,.96);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:14px;
+    box-shadow:var(--shadow);
 }
 
-.stTextInput label, .stSelectbox label {
-    color: #374151 !important;
-    font-weight: 800 !important;
-    font-size: 13px !important;
+.stTextInput label,
+.stSelectbox label {
+    color:#6b7280!important;
+    font-weight:850!important;
+    font-size:12px!important;
 }
 
 .stTextInput input {
-    background: #ffffff !important;
-    color: #111827 !important;
-    border: 1px solid #e5e7eb !important;
-    border-radius: 14px !important;
-    height: 46px !important;
-    font-weight: 750 !important;
-    font-size: 15px !important;
-}
-
-.stTextInput input::placeholder {
-    color: #9ca3af !important;
+    height:44px!important;
+    border-radius:13px!important;
+    border:1px solid #e5e7eb!important;
+    background:#fff!important;
+    color:#111827!important;
+    font-size:15px!important;
+    font-weight:850!important;
 }
 
 .stSelectbox div[data-baseweb="select"] > div {
-    background: #ffffff !important;
-    color: #111827 !important;
-    border: 1px solid #e5e7eb !important;
-    border-radius: 14px !important;
-    min-height: 46px !important;
-    font-weight: 750 !important;
-    font-size: 15px !important;
+    min-height:44px!important;
+    border-radius:13px!important;
+    border:1px solid #e5e7eb!important;
+    background:#fff!important;
+    color:#111827!important;
+    font-size:15px!important;
+    font-weight:850!important;
 }
 
 .stButton button {
-    width: 100%;
-    height: 50px;
-    border-radius: 999px;
-    border: none;
-    background: linear-gradient(90deg, #ef4444, #f97316);
-    color: white !important;
-    font-weight: 900;
-    font-size: 16px;
-    box-shadow: 0 14px 28px rgba(239,68,68,.22);
+    height:48px;
+    border-radius:14px;
+    border:none;
+    background:linear-gradient(90deg,#ff3b3b,#ff6a18);
+    color:#fff!important;
+    font-weight:950;
+    font-size:15px;
+    box-shadow:0 14px 26px rgba(239,68,68,.25);
 }
 
-.metric-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+.support-text {
+    margin-top:10px;
+    color:#6b7280;
+    font-size:12px;
+    font-weight:700;
+    line-height:1.65;
 }
 
-.metric-card {
-    background: #ffffff;
-    border: 1px solid #edf0f5;
-    border-radius: 16px;
-    padding: 13px 10px;
-    box-shadow: 0 8px 18px rgba(15,23,42,.05);
-    min-height: 86px;
+.chart-title-row {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:4px;
 }
 
-.metric-label {
-    color: #6b7280;
-    font-size: 12px;
-    font-weight: 800;
-    margin-bottom: 7px;
+.fullscreen-pill {
+    padding:5px 8px;
+    border-radius:999px;
+    border:1px solid #e5e7eb;
+    font-size:11px;
+    color:#6b7280;
+    font-weight:800;
+    background:#fff;
 }
 
-.metric-value {
-    color: #111827;
-    font-size: 22px;
-    font-weight: 900;
-    line-height: 1.15;
-    word-break: break-all;
+.score-card {
+    background:linear-gradient(135deg,#fff7f4,#fff);
+    border:1px solid rgba(239,68,68,.14);
+    border-radius:18px;
+    padding:15px;
 }
 
-.metric-sub {
-    color: #9ca3af;
-    font-size: 11px;
-    font-weight: 650;
-    margin-top: 6px;
-    line-height: 1.35;
-}
-
-.score-box {
-    background: linear-gradient(135deg, #fff7f4, #ffffff);
-    border: 1px solid rgba(239,68,68,.14);
-    border-radius: 20px;
-    padding: 16px;
+.score-layout {
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:12px;
+    align-items:start;
 }
 
 .score-num {
-    font-size: 44px;
-    font-weight: 950;
-    color: #ef4444;
-    line-height: 1;
+    font-size:42px;
+    line-height:1;
+    font-weight:950;
+    color:#ef4444;
 }
 
 .score-total {
-    color: #9ca3af;
-    font-size: 18px;
-    font-weight: 800;
+    font-size:17px;
+    color:#9ca3af;
+    font-weight:850;
 }
 
-.score-title {
-    font-size: 18px;
-    font-weight: 900;
-    color: #111827;
-    margin-top: 10px;
+.score-status {
+    font-size:18px;
+    margin-top:10px;
+    font-weight:950;
 }
 
 .score-desc {
-    color: #4b5563;
-    font-size: 13px;
-    font-weight: 650;
-    line-height: 1.6;
-    margin-top: 6px;
+    font-size:12px;
+    line-height:1.55;
+    color:#4b5563;
+    margin-top:6px;
+    font-weight:650;
 }
 
 .progress-bg {
-    height: 10px;
-    border-radius: 999px;
-    background: #fee2e2;
-    overflow: hidden;
-    margin-top: 13px;
+    height:9px;
+    background:#fee2e2;
+    border-radius:999px;
+    overflow:hidden;
+    margin-top:12px;
 }
 
 .progress-fill {
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #ef4444, #f97316);
+    height:100%;
+    background:linear-gradient(90deg,#ef4444,#f97316);
+    border-radius:999px;
+}
+
+.mini-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.mini-box {
+    background:rgba(255,255,255,.76);
+    border:1px solid #f0f2f6;
+    border-radius:13px;
+    padding:10px;
+}
+
+.mini-label {
+    font-size:11px;
+    color:#6b7280;
+    font-weight:850;
+}
+
+.mini-value {
+    margin-top:5px;
+    font-size:17px;
+    font-weight:950;
+}
+
+.mini-sub {
+    font-size:11px;
+    color:#9ca3af;
+    margin-top:3px;
+    font-weight:700;
+}
+
+.kpi-row {
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:8px;
+    margin-top:10px;
+}
+
+.kpi-box {
+    background:#fff;
+    border:1px solid #edf0f5;
+    border-radius:13px;
+    padding:10px;
+}
+
+.kpi-label {
+    font-size:11px;
+    color:#6b7280;
+    font-weight:850;
+}
+
+.kpi-value {
+    font-size:16px;
+    margin-top:5px;
+    font-weight:950;
+}
+
+.decision-grid {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
 }
 
 .decision-card {
-    background: #ffffff;
-    border: 1px solid #edf0f5;
-    border-radius: 17px;
-    padding: 14px;
-    margin-bottom: 10px;
-    box-shadow: 0 8px 18px rgba(15,23,42,.05);
+    border-radius:16px;
+    padding:14px;
+    border:1px solid #edf0f5;
+}
+
+.buy-card {
+    background:linear-gradient(135deg,#effdf4,#ffffff);
+}
+
+.break-card {
+    background:linear-gradient(135deg,#fff7ed,#ffffff);
+}
+
+.risk-card {
+    background:linear-gradient(135deg,#fff1f2,#ffffff);
 }
 
 .decision-title {
-    font-size: 15px;
-    font-weight: 900;
-    margin-bottom: 7px;
+    font-size:15px;
+    font-weight:950;
 }
 
 .decision-price {
-    font-size: 20px;
-    font-weight: 950;
-    color: #ef4444;
-    margin-bottom: 7px;
+    margin-top:8px;
+    font-size:22px;
+    font-weight:950;
+    color:#ef4444;
 }
 
 .decision-text {
-    color: #4b5563;
-    font-size: 13px;
-    line-height: 1.65;
-    font-weight: 650;
+    margin-top:8px;
+    color:#4b5563;
+    font-size:13px;
+    line-height:1.6;
+    font-weight:700;
+}
+
+.metric-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.metric-card {
+    background:#fff;
+    border:1px solid #edf0f5;
+    border-radius:16px;
+    padding:13px;
+    min-height:88px;
+}
+
+.metric-label {
+    color:#6b7280;
+    font-size:12px;
+    font-weight:850;
+}
+
+.metric-value {
+    margin-top:8px;
+    color:#111827;
+    font-size:22px;
+    font-weight:950;
+    line-height:1.1;
+}
+
+.metric-sub {
+    color:#9ca3af;
+    font-size:11px;
+    font-weight:700;
+    margin-top:6px;
 }
 
 .news-item {
-    background: #ffffff;
-    border: 1px solid #edf0f5;
-    border-radius: 15px;
-    padding: 12px;
-    margin-bottom: 9px;
+    background:#fff;
+    border:1px solid #edf0f5;
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:8px;
 }
 
 .news-item a {
-    color: #2563eb !important;
-    font-size: 13px;
-    line-height: 1.5;
-    font-weight: 800;
-    text-decoration: none;
+    color:#2563eb!important;
+    font-size:13px;
+    line-height:1.5;
+    font-weight:850;
+    text-decoration:none;
 }
 
 .news-meta {
-    color: #9ca3af;
-    font-size: 11px;
-    font-weight: 650;
-    margin-top: 6px;
+    margin-top:6px;
+    color:#9ca3af;
+    font-size:11px;
+    font-weight:700;
 }
 
 .ai-box {
-    background: #ffffff;
-    border: 1px solid #edf0f5;
-    border-radius: 18px;
-    padding: 15px;
-    box-shadow: 0 8px 18px rgba(15,23,42,.05);
+    background:#fff;
+    border:1px solid #edf0f5;
+    border-radius:16px;
+    padding:14px;
 }
 
 [data-testid="stMarkdownContainer"] p,
 [data-testid="stMarkdownContainer"] li {
-    color: #1f2937 !important;
-    font-size: 14px;
-    line-height: 1.75;
+    font-size:14px;
+    line-height:1.78;
+    color:#1f2937!important;
 }
 
 [data-testid="stMarkdownContainer"] h1,
 [data-testid="stMarkdownContainer"] h2,
 [data-testid="stMarkdownContainer"] h3 {
-    color: #111827 !important;
-    font-weight: 900 !important;
-    font-size: 18px !important;
-    margin-top: 16px !important;
+    font-size:18px!important;
+    color:#111827!important;
+    font-weight:950!important;
+    margin-top:16px!important;
 }
 
-.bottom-safe {
-    height: 18px;
+.tip {
+    background:#fff7ed;
+    border:1px solid #fed7aa;
+    color:#9a3412;
+    border-radius:14px;
+    padding:12px;
+    font-size:13px;
+    line-height:1.65;
+    font-weight:750;
+}
+
+@media (max-width:390px) {
+    .score-layout {
+        grid-template-columns:1fr;
+    }
+    .kpi-row {
+        grid-template-columns:1fr;
+    }
 }
 </style>
-""",
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
 
-# =====================================================
-# 工具函数
-# =====================================================
 def is_valid_key() -> bool:
-    if not DEEPSEEK_API_KEY:
-        return False
-    if DEEPSEEK_API_KEY == "这里填你的DeepSeek key":
-        return False
-    if DEEPSEEK_API_KEY == "EMPTY":
-        return False
-    return True
+    return bool(
+        DEEPSEEK_API_KEY
+        and DEEPSEEK_API_KEY != "这里填你的DeepSeek key"
+        and DEEPSEEK_API_KEY != "EMPTY"
+    )
 
 
 def safe_float(value, default=0.0) -> float:
@@ -388,8 +504,7 @@ def safe_float(value, default=0.0) -> float:
 
 
 def format_price(value) -> str:
-    value = safe_float(value)
-    return f"{value:.2f}"
+    return f"{safe_float(value):.2f}"
 
 
 def format_big_number(value) -> str:
@@ -402,23 +517,17 @@ def format_big_number(value) -> str:
 
 
 def normalize_ticker(raw: str) -> str:
-    code = str(raw).strip().upper()
-    code = code.replace(" ", "")
-
+    code = str(raw).strip().upper().replace(" ", "")
     if not code:
         return "AAPL"
-
     if code.endswith(".SH"):
         code = code.replace(".SH", ".SS")
-
     if code.endswith(".SS") or code.endswith(".SZ") or code.endswith(".HK"):
         return code
-
     if re.fullmatch(r"\d{6}", code):
         if code.startswith(("6", "9")):
             return f"{code}.SS"
         return f"{code}.SZ"
-
     return code
 
 
@@ -448,9 +557,7 @@ def flatten_columns(data: pd.DataFrame) -> pd.DataFrame:
                 if part_str in ["Open", "High", "Low", "Close", "Adj Close", "Volume"]:
                     picked = part_str
                     break
-            if picked is None:
-                picked = str(col[0])
-            new_cols.append(picked)
+            new_cols.append(picked if picked else str(col[0]))
         data.columns = new_cols
     else:
         data.columns = [str(col) for col in data.columns]
@@ -491,16 +598,9 @@ def fetch_price_data(ticker: str, period: str) -> pd.DataFrame:
         threads=False,
         group_by="column"
     )
-
     if data is None or data.empty:
         return pd.DataFrame()
-
-    data = flatten_columns(data)
-
-    if data.empty:
-        return pd.DataFrame()
-
-    return data
+    return flatten_columns(data)
 
 
 def add_indicators(data: pd.DataFrame) -> pd.DataFrame:
@@ -532,7 +632,7 @@ def add_indicators(data: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def fetch_news(ticker: str, stock_name: str, max_items: int = 5):
+def fetch_news(ticker: str, stock_name: str, max_items: int = 4):
     query_words = []
     code = short_code(ticker)
 
@@ -558,13 +658,11 @@ def fetch_news(ticker: str, stock_name: str, max_items: int = 5):
     try:
         resp = requests.get(url, timeout=7, headers={"User-Agent": "Mozilla/5.0"})
         resp.raise_for_status()
-
         root = ET.fromstring(resp.content)
 
         for item in root.findall(".//item")[:max_items]:
             title = item.findtext("title") or ""
             link = item.findtext("link") or ""
-            pub_date = item.findtext("pubDate") or ""
             source_node = item.find("source")
             source = source_node.text if source_node is not None else "新闻源"
 
@@ -574,10 +672,8 @@ def fetch_news(ticker: str, stock_name: str, max_items: int = 5):
                 items.append({
                     "title": title,
                     "link": link,
-                    "source": source,
-                    "date": pub_date
+                    "source": source
                 })
-
     except Exception:
         pass
 
@@ -585,14 +681,8 @@ def fetch_news(ticker: str, stock_name: str, max_items: int = 5):
 
 
 def score_news(news_items):
-    positive_words = [
-        "增长", "盈利", "利好", "中标", "回购", "增持", "突破", "创新高",
-        "上调", "买入", "净利", "业绩预增", "合作", "获批", "订单"
-    ]
-    negative_words = [
-        "减持", "亏损", "下滑", "处罚", "风险", "诉讼", "问询", "退市",
-        "立案", "违规", "暴跌", "预亏", "警示", "债务"
-    ]
+    positive_words = ["增长", "盈利", "利好", "中标", "回购", "增持", "突破", "创新高", "上调", "买入", "净利", "业绩预增", "合作", "获批", "订单"]
+    negative_words = ["减持", "亏损", "下滑", "处罚", "风险", "诉讼", "问询", "退市", "立案", "违规", "暴跌", "预亏", "警示", "债务"]
 
     pos = 0
     neg = 0
@@ -616,7 +706,6 @@ def calculate_score(df: pd.DataFrame, risk: str, news_items):
     ma5 = safe_float(latest["ma5"])
     ma10 = safe_float(latest["ma10"])
     ma20 = safe_float(latest["ma20"])
-    ma60 = safe_float(latest["ma60"])
     macd_dif = safe_float(latest["macd_dif"])
     macd_dea = safe_float(latest["macd_dea"])
     macd_hist = safe_float(latest["macd_hist"])
@@ -680,17 +769,14 @@ def calculate_score(df: pd.DataFrame, risk: str, news_items):
         risk_score -= 5
     elif volatility > 0.03:
         risk_score -= 3
-
     if drawdown < -0.12:
         risk_score -= 5
     elif drawdown < -0.07:
         risk_score -= 3
-
     if kdj_j > 100:
         risk_score -= 3
 
     risk_score = max(0, min(15, risk_score))
-
     news_score, news_pos, news_neg = score_news(news_items)
 
     total = int(round(trend_score + momentum_score + volume_score + risk_score + news_score))
@@ -699,15 +785,15 @@ def calculate_score(df: pd.DataFrame, risk: str, news_items):
     if total >= 80:
         level = "强势区"
         action = "趋势跟踪"
-        action_desc = "适合已有仓位继续观察，新增仓位更适合等回踩。"
+        action_desc = "已有仓位可继续观察，新增仓位更适合等回踩。"
     elif total >= 65:
         level = "偏强区"
         action = "小仓试探"
-        action_desc = "可以关注回踩低吸或突破确认，但需要设置止损线。"
+        action_desc = "可关注回踩低吸或突破确认，但需要设置止损。"
     elif total >= 50:
         level = "中性区"
         action = "观察为主"
-        action_desc = "多空没有明显胜负，适合等待放量突破或回踩企稳。"
+        action_desc = "多空没有明显胜负，等待放量突破或回踩企稳。"
     else:
         level = "风险区"
         action = "谨慎回避"
@@ -736,7 +822,6 @@ def calculate_score(df: pd.DataFrame, risk: str, news_items):
         "ma5": ma5,
         "ma10": ma10,
         "ma20": ma20,
-        "ma60": ma60,
         "macd_dif": macd_dif,
         "macd_dea": macd_dea,
         "macd_hist": macd_hist,
@@ -752,7 +837,6 @@ def calculate_score(df: pd.DataFrame, risk: str, news_items):
 
 def calculate_trade_map(df: pd.DataFrame, score_info: dict):
     latest = df.iloc[-1]
-
     close = safe_float(latest["close"])
     ma5 = safe_float(latest["ma5"])
     ma10 = safe_float(latest["ma10"])
@@ -768,20 +852,11 @@ def calculate_trade_map(df: pd.DataFrame, score_info: dict):
     if support_main <= 0:
         support_main = recent_low
 
-    watch_low = min(support_main, close)
-    watch_high = max(support_high, close)
-
-    breakout = recent_high
-    stop_loss = min(recent_low, close * 0.95)
-
     return {
-        "watch_low": watch_low,
-        "watch_high": watch_high,
-        "breakout": breakout,
-        "stop_loss": stop_loss,
-        "support_main": support_main,
-        "recent_high": recent_high,
-        "recent_low": recent_low,
+        "watch_low": min(support_main, close),
+        "watch_high": max(support_high, close),
+        "breakout": recent_high,
+        "stop_loss": min(recent_low, close * 0.95),
     }
 
 
@@ -828,7 +903,7 @@ def build_kline_chart(df: pd.DataFrame, ticker: str):
             x=plot_df["x"],
             y=plot_df["volume"],
             marker_color=volume_colors,
-            opacity=0.55,
+            opacity=0.5,
             name="成交量"
         ),
         row=2,
@@ -845,49 +920,36 @@ def build_kline_chart(df: pd.DataFrame, ticker: str):
         ticktext=tick_text,
         showgrid=False,
         zeroline=False,
-        rangeslider_visible=False,
-        row=1,
-        col=1
-    )
-
-    fig.update_xaxes(
-        tickmode="array",
-        tickvals=tick_vals,
-        ticktext=tick_text,
-        showgrid=False,
-        zeroline=False,
-        row=2,
-        col=1
+        rangeslider_visible=False
     )
 
     fig.update_yaxes(
         showgrid=True,
         gridcolor="rgba(148,163,184,0.18)",
-        zeroline=False,
-        title_text="",
-        row=1,
-        col=1
-    )
-
-    fig.update_yaxes(
-        showgrid=False,
-        zeroline=False,
-        title_text="",
-        row=2,
-        col=1
+        zeroline=False
     )
 
     fig.update_layout(
-        height=315,
-        margin=dict(l=4, r=4, t=4, b=4),
+        height=292,
+        margin=dict(l=2, r=2, t=2, b=2),
         showlegend=False,
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(255,255,255,0.25)",
-        font=dict(color="#374151", size=10),
+        plot_bgcolor="rgba(255,255,255,0)",
+        font=dict(color="#6b7280", size=10),
         xaxis_rangeslider_visible=False
     )
 
     return fig
+
+
+def mini_box(label, value, sub=""):
+    return f"""
+<div class="mini-box">
+    <div class="mini-label">{html_lib.escape(str(label))}</div>
+    <div class="mini-value">{html_lib.escape(str(value))}</div>
+    <div class="mini-sub">{html_lib.escape(str(sub))}</div>
+</div>
+"""
 
 
 def metric_card(label, value, sub=""):
@@ -900,79 +962,53 @@ def metric_card(label, value, sub=""):
 """
 
 
-def decision_card(title, price, text):
-    st.markdown(
-        f"""
-<div class="decision-card">
-    <div class="decision-title">{html_lib.escape(title)}</div>
-    <div class="decision-price">{html_lib.escape(price)}</div>
-    <div class="decision-text">{html_lib.escape(text)}</div>
-</div>
-""",
-        unsafe_allow_html=True
-    )
-
-
 def render_score(score_info):
     total = score_info["total"]
     width = max(0, min(100, total))
 
-    st.markdown(
-        f"""
-<div class="score-box">
-    <div style="color:#6b7280;font-size:12px;font-weight:850;margin-bottom:8px;">AI综合评分</div>
-    <span class="score-num">{total}</span>
-    <span class="score-total">/100</span>
-    <div class="score-title">{html_lib.escape(score_info["level"])} · {html_lib.escape(score_info["action"])}</div>
-    <div class="score-desc">{html_lib.escape(score_info["action_desc"])}</div>
-    <div class="progress-bg">
-        <div class="progress-fill" style="width:{width}%;"></div>
+    st.markdown(f"""
+<div class="score-card">
+    <div class="score-layout">
+        <div>
+            <div style="color:#6b7280;font-size:12px;font-weight:850;margin-bottom:8px;">AI综合评分</div>
+            <span class="score-num">{total}</span>
+            <span class="score-total">/100</span>
+            <div class="score-status">{html_lib.escape(score_info["level"])} · {html_lib.escape(score_info["action"])}</div>
+            <div class="score-desc">{html_lib.escape(score_info["action_desc"])}</div>
+            <div class="progress-bg"><div class="progress-fill" style="width:{width}%;"></div></div>
+        </div>
+        <div class="mini-grid">
+            {mini_box("趋势结构", f'{score_info["trend_score"]}/30', "趋势")}
+            {mini_box("动能指标", f'{score_info["momentum_score"]}/20', "动能")}
+            {mini_box("消息面", f'{score_info["news_score"]}/15', "情绪")}
+            {mini_box("风险控制", f'{score_info["risk_score"]}/15', "风控")}
+        </div>
+    </div>
+    <div class="kpi-row">
+        <div class="kpi-box"><div class="kpi-label">利好</div><div class="kpi-value">↑ {score_info["news_pos"]}</div></div>
+        <div class="kpi-box"><div class="kpi-label">风险</div><div class="kpi-value">↓ {score_info["news_neg"]}</div></div>
+        <div class="kpi-box"><div class="kpi-label">最新价</div><div class="kpi-value">{format_price(score_info["latest_close"])}</div></div>
     </div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        f"""
-<div class="metric-grid" style="margin-top:10px;">
-    {metric_card("趋势结构", f'{score_info["trend_score"]}/30', "均线方向")}
-    {metric_card("动能指标", f'{score_info["momentum_score"]}/20', "MACD / KDJ")}
-    {metric_card("成交量资金", f'{score_info["volume_score"]}/20', "量价配合")}
-    {metric_card("风险状态", f'{score_info["risk_score"]}/15', "波动与回撤")}
-    {metric_card("消息面", f'{score_info["news_score"]}/15', f'利好{score_info["news_pos"]} 风险{score_info["news_neg"]}')}
-    {metric_card("最新价", format_price(score_info["latest_close"]), "最新收盘价")}
-</div>
-""",
-        unsafe_allow_html=True
-    )
+""", unsafe_allow_html=True)
 
 
 def render_news(news_items):
-    st.markdown('<div class="section-title">📰 个股消息面</div>', unsafe_allow_html=True)
-
     if not news_items:
-        st.markdown(
-            """
-<div class="tip">暂未抓取到高相关个股新闻，当前分析主要参考K线、成交量、技术指标与AI解读。</div>
-""",
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="tip">暂未抓取到高相关个股新闻，当前分析主要参考K线、成交量、技术指标与AI解读。</div>', unsafe_allow_html=True)
         return
 
     for item in news_items:
         title = html_lib.escape(item.get("title", ""))
         link = item.get("link", "")
         source = html_lib.escape(item.get("source", "新闻源"))
-        st.markdown(
-            f"""
+
+        st.markdown(f"""
 <div class="news-item">
     <a href="{link}" target="_blank">{title}</a>
     <div class="news-meta">{source}</div>
 </div>
-""",
-            unsafe_allow_html=True
-        )
+""", unsafe_allow_html=True)
 
 
 def fallback_analysis(ticker, stock_name, score_info, trade_map):
@@ -1000,9 +1036,7 @@ def fallback_analysis(ticker, stock_name, score_info, trade_map):
 
 
 def build_ai_prompt(ticker, stock_name, risk, df, score_info, trade_map, news_items):
-    news_text = "\n".join(
-        [f"- {item['title']}" for item in news_items[:5]]
-    ) if news_items else "暂无高相关个股新闻。"
+    news_text = "\n".join([f"- {item['title']}" for item in news_items[:4]]) if news_items else "暂无高相关个股新闻。"
 
     recent_data = df.tail(12)[[
         "open", "high", "low", "close", "volume",
@@ -1011,7 +1045,7 @@ def build_ai_prompt(ticker, stock_name, risk, df, score_info, trade_map, news_it
 
     display_name = f"{stock_name}（{ticker}）" if stock_name else ticker
 
-    prompt = f"""
+    return f"""
 你是一个A股/美股短线投资分析助手，请用中文分析，不要输出英文，不要输出HTML，不要输出代码。
 
 股票：{display_name}
@@ -1030,16 +1064,6 @@ def build_ai_prompt(ticker, stock_name, risk, df, score_info, trade_map, news_it
 - 风险状态：{score_info["risk_score"]}/15
 - 消息面：{score_info["news_score"]}/15
 
-关键技术数据：
-- 最新价：{format_price(score_info["latest_close"])}
-- MA5：{format_price(score_info["ma5"])}
-- MA10：{format_price(score_info["ma10"])}
-- MA20：{format_price(score_info["ma20"])}
-- MACD DIF：{format_price(score_info["macd_dif"])}
-- MACD DEA：{format_price(score_info["macd_dea"])}
-- KDJ-J：{format_price(score_info["kdj_j"])}
-- 最新成交量：{format_big_number(score_info["volume"])}
-
 买卖点地图：
 - 观察低吸区间：{format_price(trade_map["watch_low"])} - {format_price(trade_map["watch_high"])}
 - 突破确认点：{format_price(trade_map["breakout"])}
@@ -1048,7 +1072,7 @@ def build_ai_prompt(ticker, stock_name, risk, df, score_info, trade_map, news_it
 相关新闻：
 {news_text}
 
-请按以下结构输出，语言要让小白能看懂，每段都要短，不要空话：
+请按以下结构输出，语言让小白能看懂，每段都短，不要空话：
 
 ### 一、先给小白看的结论
 用3条以内说明现在能不能追、适合观察还是适合小仓试探。
@@ -1057,10 +1081,7 @@ def build_ai_prompt(ticker, stock_name, risk, df, score_info, trade_map, news_it
 分别从趋势、成交量、MACD/KDJ、消息面解释，每点一句话。
 
 ### 三、买卖点地图
-明确说明：
-1. 观察低吸条件
-2. 突破确认条件
-3. 止损或离场条件
+明确说明观察低吸、突破确认、止损离场条件。
 
 ### 四、核心机会
 列出2-3条。
@@ -1071,8 +1092,6 @@ def build_ai_prompt(ticker, stock_name, risk, df, score_info, trade_map, news_it
 ### 六、三条规则
 给出小白可执行的三条观察规则。
 """
-
-    return prompt
 
 
 def call_ai_analysis(ticker, stock_name, risk, df, score_info, trade_map, news_items):
@@ -1096,97 +1115,56 @@ def call_ai_analysis(ticker, stock_name, risk, df, score_info, trade_map, news_i
             ],
             temperature=0.3
         )
-
         return response.choices[0].message.content
-
     except Exception as e:
         return fallback_analysis(ticker, stock_name, score_info, trade_map) + f"\n\n> AI接口暂时失败，已使用本地稳定分析结果。错误信息：{str(e)}"
 
 
-# =====================================================
-# 页面头部
-# =====================================================
-st.markdown(
-    """
-<div class="hero">
-    <div class="hero-title">📊 AI股票分析平台</div>
-    <div class="hero-sub">输入股票代码，快速生成K线趋势、AI评分、买卖点地图和小白可读解读。</div>
-    <span class="tag">A股逻辑</span>
-    <span class="tag">真实K线</span>
-    <span class="tag">AI评分</span>
-    <span class="tag">手机端H5</span>
-</div>
-""",
-    unsafe_allow_html=True
-)
-
-
-# =====================================================
-# 参数输入卡片
-# =====================================================
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">⚙️ 参数设置</div>', unsafe_allow_html=True)
-
-raw_ticker = st.text_input(
-    "股票代码",
-    value="000066",
-    placeholder="例如：000066、000066.SZ、601881、AAPL"
-)
-
-stock_name = st.text_input(
-    "股票名称",
-    value="中国长城",
-    placeholder="例如：中国长城、中国银河、英伟达"
-)
-
-period = st.selectbox(
-    "分析周期",
-    ["5d", "1mo", "3mo", "6mo", "1y"],
-    index=1
-)
-
-risk = st.selectbox(
-    "风险偏好",
-    ["低", "中", "高"],
-    index=1
-)
-
-start_btn = st.button("🚀 开始分析")
-
-st.markdown(
-    """
-<div style="margin-top:12px;color:#6b7280;font-size:12px;font-weight:650;line-height:1.7;">
-A股支持：000066、000066.SZ、601881、601881.SS。<br/>
-美股支持：AAPL、NVDA、TSLA。
-</div>
-""",
-    unsafe_allow_html=True
-)
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-
-# =====================================================
-# 默认说明
-# =====================================================
-if not start_btn:
-    st.markdown(
-        """
-<div class="card">
-    <div class="section-title">📱 使用说明</div>
-    <div class="tip">
-    这是手机端适配版：输入股票代码后，会按移动端阅读顺序展示 K线图、AI评分、买卖点地图、技术指标、消息面和AI解读。
+st.markdown("""
+<div class="topbar">
+    <div class="brand">
+        <div class="logo">📊</div>
+        <div>
+            <div class="brand-title">AI股票分析平台</div>
+            <div class="brand-sub">智能分析 · 快速决策 · 小白可读</div>
+        </div>
     </div>
+    <div class="help-btn">使用说明</div>
 </div>
-""",
-        unsafe_allow_html=True
-    )
+""", unsafe_allow_html=True)
+
+with st.form("stock_form"):
+    st.markdown('<div class="section-title">⚙️ 参数设置</div>', unsafe_allow_html=True)
+
+    c1, c2 = st.columns(2)
+    with c1:
+        raw_ticker = st.text_input("股票代码", value="002519", placeholder="例如：002519")
+    with c2:
+        stock_name = st.text_input("股票名称", value="银河电子", placeholder="例如：银河电子")
+
+    c3, c4 = st.columns(2)
+    with c3:
+        period = st.selectbox("分析周期", ["5d", "1mo", "3mo", "6mo", "1y"], index=3)
+    with c4:
+        risk = st.selectbox("风险偏好", ["低", "中", "高"], index=2)
+
+    start_btn = st.form_submit_button("🚀 开始分析")
+
+    st.markdown("""
+<div class="support-text">
+A股支持：000066、000066.SZ、601881、601881.SS ｜ 美股支持：AAPL、NVDA、TSLA
+</div>
+""", unsafe_allow_html=True)
+
+if not start_btn:
+    st.markdown("""
+<div class="section">
+    <div class="section-title">📱 使用说明</div>
+    <div class="tip">输入股票代码后，将按手机端阅读顺序展示 K线图、AI评分、买卖点地图、技术指标、消息面和AI解读。</div>
+</div>
+""", unsafe_allow_html=True)
     st.stop()
 
-
-# =====================================================
-# 分析流程
-# =====================================================
 ticker = normalize_ticker(raw_ticker)
 
 with st.spinner("正在获取行情数据与生成AI分析..."):
@@ -1206,73 +1184,49 @@ news_items = fetch_news(ticker, stock_name)
 score_info = calculate_score(df, risk, news_items)
 trade_map = calculate_trade_map(df, score_info)
 
-
-# =====================================================
-# K线区域
-# =====================================================
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown(
-    f'<div class="section-title">📈 {html_lib.escape(ticker)} K线趋势</div>',
-    unsafe_allow_html=True
-)
+st.markdown(f"""
+<div class="section">
+    <div class="chart-title-row">
+        <div class="section-title" style="margin-bottom:0;">📈 {html_lib.escape(ticker)} K线趋势</div>
+        <div class="fullscreen-pill">全屏</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 fig = build_kline_chart(df, ticker)
-st.plotly_chart(
-    fig,
-    use_container_width=True,
-    config={
-        "displayModeBar": False,
-        "responsive": True
-    }
-)
+st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "responsive": True})
 
-st.markdown('</div>', unsafe_allow_html=True)
-
-
-# =====================================================
-# AI评分
-# =====================================================
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">🧠 AI综合评分</div>', unsafe_allow_html=True)
+st.markdown('<div class="section"><div class="section-title">🧠 AI综合评分</div>', unsafe_allow_html=True)
 render_score(score_info)
 st.markdown('</div>', unsafe_allow_html=True)
 
+st.markdown('<div class="section"><div class="section-title">🎯 买卖点地图</div>', unsafe_allow_html=True)
 
-# =====================================================
-# 买卖点地图
-# =====================================================
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">🎯 买卖点地图</div>', unsafe_allow_html=True)
-
-decision_card(
-    "🟢 观察买点",
-    f'{format_price(trade_map["watch_low"])} - {format_price(trade_map["watch_high"])}',
-    "价格回到短期均线附近，并且没有继续放量下跌时，再观察低吸机会。"
-)
-
-decision_card(
-    "🚀 突破确认点",
-    format_price(trade_map["breakout"]),
-    "放量突破近期高点，说明短线资金可能重新增强；没有放量则谨慎。"
-)
-
-decision_card(
-    "🔴 风险止损线",
-    format_price(trade_map["stop_loss"]),
-    "跌破该位置说明短线结构转弱，优先控制风险，不硬扛。"
-)
+st.markdown(f"""
+<div class="decision-grid">
+    <div class="decision-card buy-card">
+        <div class="decision-title">🟢 观察买点</div>
+        <div class="decision-price">{format_price(trade_map["watch_low"])} - {format_price(trade_map["watch_high"])}</div>
+        <div class="decision-text">价格回到短期均线附近，并且没有继续放量下跌时，再观察低吸机会。</div>
+    </div>
+    <div class="decision-card break-card">
+        <div class="decision-title">🚀 突破确认点</div>
+        <div class="decision-price">{format_price(trade_map["breakout"])}</div>
+        <div class="decision-text">放量突破近期高点，说明短线资金可能重新增强；没有放量则谨慎。</div>
+    </div>
+    <div class="decision-card risk-card">
+        <div class="decision-title">🔴 风险止损线</div>
+        <div class="decision-price">{format_price(trade_map["stop_loss"])}</div>
+        <div class="decision-text">跌破该位置说明短线结构转弱，优先控制风险，不硬扛。</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
+st.markdown('<div class="section"><div class="section-title">📌 技术指标摘要</div>', unsafe_allow_html=True)
 
-# =====================================================
-# 技术指标摘要
-# =====================================================
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">📌 技术指标摘要</div>', unsafe_allow_html=True)
-
-st.markdown(
-    f"""
+st.markdown(f"""
 <div class="metric-grid">
     {metric_card("MA5", format_price(score_info["ma5"]), "5日均线")}
     {metric_card("MA10", format_price(score_info["ma10"]), "10日均线")}
@@ -1281,26 +1235,15 @@ st.markdown(
     {metric_card("KDJ-J", format_price(score_info["kdj_j"]), "情绪热度")}
     {metric_card("成交量", format_big_number(score_info["volume"]), "最新成交量")}
 </div>
-""",
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-
-# =====================================================
-# 新闻
-# =====================================================
-st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<div class="section"><div class="section-title">📰 个股消息面</div>', unsafe_allow_html=True)
 render_news(news_items)
 st.markdown('</div>', unsafe_allow_html=True)
 
-
-# =====================================================
-# AI解读
-# =====================================================
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">🤖 AI小白解读</div>', unsafe_allow_html=True)
+st.markdown('<div class="section"><div class="section-title">🤖 AI小白解读</div>', unsafe_allow_html=True)
 
 analysis_text = call_ai_analysis(
     ticker=ticker,
@@ -1314,15 +1257,7 @@ analysis_text = call_ai_analysis(
 
 st.markdown('<div class="ai-box">', unsafe_allow_html=True)
 st.markdown(analysis_text)
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div></div>', unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
-
-
-# =====================================================
-# 原始数据
-# =====================================================
 with st.expander("查看原始行情数据"):
     st.dataframe(df.tail(30), use_container_width=True)
-
-st.markdown('<div class="bottom-safe"></div>', unsafe_allow_html=True)
