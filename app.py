@@ -57,7 +57,7 @@ html, body, .stApp {
 }
 
 .block-container {
-    padding: 16px 14px 96px !important;
+    padding: 16px 14px 104px !important;
 }
 
 .element-container,
@@ -103,14 +103,16 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
 .stButton button,
 .stFormSubmitButton button {
     width: 100%;
-    height: 50px;
-    border-radius: 999px;
+    height: 52px;
+    border-radius: 18px;
     border: none;
-    background: linear-gradient(90deg,#ef4444,#ff6a18);
+    background: linear-gradient(135deg,#ef4444 0%,#ff6a18 100%);
     color: #fff !important;
-    font-weight: 950;
-    font-size: 16px;
-    box-shadow: 0 14px 28px rgba(239,68,68,.26);
+    font-weight: 900;
+    font-size: 17px;
+    box-shadow:
+        0 10px 20px rgba(239,68,68,.18),
+        inset 0 1px 0 rgba(255,255,255,.18);
 }
 
 .secondary-btn button {
@@ -126,9 +128,9 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
         linear-gradient(135deg, #fff4eb 0%, #ffffff 56%, #fff1f1 100%);
     border: 1px solid rgba(239,68,68,.16);
     border-radius: 28px;
-    padding: 24px 18px 20px;
+    padding: 24px 18px 22px;
     box-shadow: 0 18px 42px rgba(239,68,68,.12);
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
 .landing-badge {
@@ -142,11 +144,12 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
 }
 
 .landing-title {
-    font-size: 34px;
-    font-weight: 950;
-    line-height: 1.16;
+    font-size: 31px;
+    font-weight: 900;
+    line-height: 1.22;
     margin-top: 18px;
-    letter-spacing: -0.8px;
+    letter-spacing: -0.6px;
+    color: #111827;
 }
 
 .landing-sub {
@@ -158,7 +161,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
 }
 
 .price-card {
-    margin-top: 20px;
+    margin-top: 24px;
+    margin-bottom: 16px;
     background: linear-gradient(135deg, #ef4444 0%, #ff6a18 100%);
     border-radius: 24px;
     padding: 20px 18px;
@@ -199,7 +203,7 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     border-radius: 22px;
     padding: 16px;
     box-shadow: 0 12px 30px rgba(15,23,42,.07);
-    margin-top: 14px;
+    margin-top: 18px;
 }
 
 .landing-section-title {
@@ -273,6 +277,43 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     margin-top: 3px;
     font-size: 12px;
     color: #7c2d12;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+.hot-stock-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg,#fff7f4,#ffffff);
+    border: 1px solid rgba(239,68,68,.10);
+    border-radius: 16px;
+    padding: 13px;
+    margin-top: 10px;
+}
+
+.hot-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    background: linear-gradient(135deg,#ef4444,#ff6a18);
+    color: #fff;
+    font-weight: 950;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.hot-title {
+    font-size: 15px;
+    font-weight: 950;
+}
+
+.hot-desc {
+    margin-top: 3px;
+    color: #6b7280;
+    font-size: 12px;
     line-height: 1.45;
     font-weight: 700;
 }
@@ -597,12 +638,10 @@ if "page" not in st.session_state:
 
 def go_app():
     st.session_state.page = "app"
-    st.rerun()
 
 
 def go_landing():
     st.session_state.page = "landing"
-    st.rerun()
 
 
 def render_landing_page():
@@ -635,6 +674,39 @@ def render_landing_page():
     st.markdown('<div class="secondary-btn">', unsafe_allow_html=True)
     st.button("先体验AI分析", on_click=go_app, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown(
+        """
+<div class="landing-card">
+    <div class="landing-section-title">近期热门AI分析</div>
+
+    <div class="hot-stock-row">
+        <div class="hot-icon">🔥</div>
+        <div>
+            <div class="hot-title">寒武纪</div>
+            <div class="hot-desc">AI评分 87分 · 趋势偏强 · 放量突破</div>
+        </div>
+    </div>
+
+    <div class="hot-stock-row">
+        <div class="hot-icon">📈</div>
+        <div>
+            <div class="hot-title">中国长城</div>
+            <div class="hot-desc">AI评分 82分 · 算力方向热度提升</div>
+        </div>
+    </div>
+
+    <div class="hot-stock-row">
+        <div class="hot-icon">🚀</div>
+        <div>
+            <div class="hot-title">中际旭创</div>
+            <div class="hot-desc">AI评分 79分 · 光模块趋势修复</div>
+        </div>
+    </div>
+</div>
+""",
+        unsafe_allow_html=True
+    )
 
     st.markdown(
         """
