@@ -113,80 +113,84 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     box-shadow: 0 14px 28px rgba(239,68,68,.26);
 }
 
+.secondary-btn button {
+    background: #fff !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239,68,68,.22) !important;
+    box-shadow: none !important;
+}
+
 .landing-hero {
     background:
-        radial-gradient(circle at 80% 20%, rgba(255,216,102,.38), transparent 32%),
-        linear-gradient(135deg, #fff4eb 0%, #ffffff 58%, #fff0f0 100%);
-    border: 1px solid rgba(239,68,68,.14);
+        radial-gradient(circle at 80% 18%, rgba(255,220,120,.42), transparent 35%),
+        linear-gradient(135deg, #fff4eb 0%, #ffffff 56%, #fff1f1 100%);
+    border: 1px solid rgba(239,68,68,.16);
     border-radius: 28px;
     padding: 24px 18px 20px;
     box-shadow: 0 18px 42px rgba(239,68,68,.12);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .landing-badge {
     display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
+    padding: 7px 12px;
     border-radius: 999px;
     background: rgba(239,68,68,.10);
     color: #dc2626;
-    font-size: 12px;
-    font-weight: 900;
+    font-size: 13px;
+    font-weight: 950;
 }
 
 .landing-title {
-    font-size: 30px;
+    font-size: 34px;
     font-weight: 950;
-    line-height: 1.15;
-    margin-top: 14px;
-    letter-spacing: -0.5px;
+    line-height: 1.16;
+    margin-top: 18px;
+    letter-spacing: -0.8px;
 }
 
 .landing-sub {
-    margin-top: 10px;
+    margin-top: 12px;
     color: #5b6472;
-    font-size: 14px;
-    line-height: 1.65;
-    font-weight: 700;
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 750;
 }
 
 .price-card {
-    margin-top: 18px;
-    background: linear-gradient(135deg, #ef4444, #ff6a18);
-    border-radius: 22px;
-    padding: 18px;
-    color: #fff;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #ef4444 0%, #ff6a18 100%);
+    border-radius: 24px;
+    padding: 20px 18px;
     box-shadow: 0 18px 36px rgba(239,68,68,.26);
 }
 
 .price-label {
-    color: rgba(255,255,255,.86);
+    color: rgba(255,255,255,.88);
     font-size: 13px;
     font-weight: 850;
 }
 
 .price-main {
-    margin-top: 6px;
+    margin-top: 8px;
     color: #fff;
-    font-size: 46px;
+    font-size: 48px;
     font-weight: 950;
     line-height: 1;
 }
 
-.price-main span {
+.price-main-small {
     color: #fff;
     font-size: 18px;
     font-weight: 900;
 }
 
 .price-desc {
-    margin-top: 10px;
-    color: rgba(255,255,255,.94);
+    margin-top: 12px;
+    color: rgba(255,255,255,.95);
     font-size: 14px;
-    line-height: 1.5;
-    font-weight: 800;
+    line-height: 1.55;
+    font-weight: 850;
 }
 
 .landing-card {
@@ -195,7 +199,7 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     border-radius: 22px;
     padding: 16px;
     box-shadow: 0 12px 30px rgba(15,23,42,.07);
-    margin-top: 13px;
+    margin-top: 14px;
 }
 
 .landing-section-title {
@@ -285,13 +289,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     backdrop-filter: blur(14px);
     border-top: 1px solid rgba(229,231,235,.9);
     z-index: 999;
-}
-
-.secondary-btn button {
-    background: #fff !important;
-    color: #ef4444 !important;
-    border: 1px solid rgba(239,68,68,.22) !important;
-    box-shadow: none !important;
 }
 
 .topbar {
@@ -609,21 +606,29 @@ def go_landing():
 
 
 def render_landing_page():
-    st.markdown("""
+    st.markdown(
+        """
 <div class="landing-hero">
     <div class="landing-badge">🔥 开户专属权益 · 限时免费</div>
-    <div class="landing-title">AI股票分析平台<br/>开通账户免费用</div>
+    <div class="landing-title">AI股票分析平台<br>开通账户免费用</div>
     <div class="landing-sub">
         输入股票代码，即可生成真实K线趋势、AI综合评分、买卖点地图与小白可读交易计划。
     </div>
-
-    <div class="price-card">
-        <div class="price-label">工具权益价值</div>
-        <div class="price-main">988<span> 元/年</span></div>
-        <div class="price-desc">完成股票开户后，即可解锁全年免费使用权益。</div>
-    </div>
 </div>
-""", unsafe_allow_html=True)
+""",
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+<div class="price-card">
+    <div class="price-label">工具权益价值</div>
+    <div class="price-main">988 <span class="price-main-small">元/年</span></div>
+    <div class="price-desc">完成股票开户后，即可解锁全年免费使用权益。</div>
+</div>
+""",
+        unsafe_allow_html=True
+    )
 
     st.button("立即开户免费使用", on_click=go_app, use_container_width=True)
 
@@ -631,7 +636,8 @@ def render_landing_page():
     st.button("先体验AI分析", on_click=go_app, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("""
+    st.markdown(
+        """
 <div class="landing-card">
     <div class="landing-section-title">你将免费获得什么</div>
     <div class="benefit-grid">
@@ -657,7 +663,12 @@ def render_landing_page():
         </div>
     </div>
 </div>
+""",
+        unsafe_allow_html=True
+    )
 
+    st.markdown(
+        """
 <div class="landing-card">
     <div class="landing-section-title">开户后使用路径</div>
     <div class="unlock-row">
@@ -682,14 +693,21 @@ def render_landing_page():
         </div>
     </div>
 </div>
+""",
+        unsafe_allow_html=True
+    )
 
+    st.markdown(
+        """
 <div class="landing-card">
     <div class="landing-section-title">为什么值得开户体验</div>
     <div class="tip">
         传统看盘需要理解K线、均线、成交量、MACD、KDJ、消息面等多个维度。这个工具会把复杂信息整理成小白能看懂的交易观察计划，帮助你更快判断机会和风险。
     </div>
 </div>
-""", unsafe_allow_html=True)
+""",
+        unsafe_allow_html=True
+    )
 
     st.markdown('<div class="bottom-cta">', unsafe_allow_html=True)
     st.button("开户解锁 988元/年权益", on_click=go_app, use_container_width=True)
