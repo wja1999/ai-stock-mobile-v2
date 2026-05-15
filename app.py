@@ -13,11 +13,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-# =====================================================
-# DeepSeek Key
-# Streamlit Cloud Secrets:
-# DEEPSEEK_API_KEY = "你的DeepSeek Key"
-# =====================================================
 DEEPSEEK_API_KEY = "sk-34bde63deba4488c939677b2a93fbb01"
 
 try:
@@ -31,10 +26,6 @@ client = OpenAI(
     base_url="https://api.deepseek.com"
 )
 
-
-# =====================================================
-# 页面配置
-# =====================================================
 st.set_page_config(
     page_title="AI股票分析平台",
     page_icon="📊",
@@ -42,10 +33,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-
-# =====================================================
-# CSS
-# =====================================================
 st.markdown("""
 <style>
 html, body, .stApp {
@@ -79,7 +66,14 @@ html, body, .stApp {
 [data-testid="stVerticalBlock"],
 [data-testid="column"] {
     max-width: 100% !important;
-    overflow-x: hidden !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+}
+
+[data-testid="column"] > div,
+[data-testid="stVerticalBlock"] > div,
+.element-container > div {
+    overflow: visible !important;
 }
 
 pre, code {
@@ -180,7 +174,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     padding: 14px;
     box-shadow: 0 10px 28px rgba(15,23,42,.07);
     margin: 10px 0;
-    overflow: hidden;
+    overflow: visible !important;
+    height: auto !important;
 }
 
 .stForm {
@@ -190,7 +185,7 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     border-radius: 18px;
     padding: 14px;
     box-shadow: 0 10px 28px rgba(15,23,42,.07);
-    overflow: hidden;
+    overflow: visible !important;
 }
 
 .stTextInput label,
@@ -247,7 +242,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     border: 1px solid rgba(239,68,68,.14);
     border-radius: 18px;
     padding: 14px;
-    overflow: hidden;
+    overflow: visible !important;
+    height: auto !important;
 }
 
 .score-label {
@@ -304,6 +300,7 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     gap: 10px;
     width: 100%;
     margin-top: 10px;
+    overflow: visible !important;
 }
 
 .metric-card {
@@ -312,7 +309,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     border-radius: 16px;
     padding: 13px;
     min-height: 88px;
-    overflow: hidden;
+    height: auto !important;
+    overflow: visible !important;
 }
 
 .metric-label {
@@ -342,7 +340,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     padding: 14px;
     border: 1px solid #edf0f5;
     margin-bottom: 10px;
-    overflow: hidden;
+    overflow: visible !important;
+    height: auto !important;
 }
 
 .buy-card {
@@ -383,6 +382,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     border-radius: 14px;
     padding: 12px;
     margin-bottom: 8px;
+    overflow: visible !important;
+    height: auto !important;
 }
 
 .news-item a {
@@ -405,7 +406,8 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
     border: 1px solid #edf0f5;
     border-radius: 16px;
     padding: 14px;
-    overflow: hidden;
+    overflow: visible !important;
+    height: auto !important;
 }
 
 [data-testid="stMarkdownContainer"] p,
@@ -444,9 +446,6 @@ h1,h2,h3,h4,h5,h6,p,li,span,div {
 """, unsafe_allow_html=True)
 
 
-# =====================================================
-# 工具函数
-# =====================================================
 def is_valid_key() -> bool:
     return bool(
         DEEPSEEK_API_KEY
@@ -1085,9 +1084,6 @@ def call_ai_analysis(ticker, stock_name, risk, df, score_info, trade_map, news_i
         return fallback_analysis(ticker, stock_name, score_info, trade_map) + f"\n\n> AI接口暂时失败，已使用本地稳定分析结果。错误信息：{str(e)}"
 
 
-# =====================================================
-# 页面
-# =====================================================
 st.markdown("""
 <div class="topbar">
     <div class="brand">
