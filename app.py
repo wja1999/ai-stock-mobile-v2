@@ -18,7 +18,8 @@ from plotly.subplots import make_subplots
 # Streamlit Cloud Secrets:
 # DEEPSEEK_API_KEY = "你的DeepSeek Key"
 # =========================
-DEEPSEEK_API_KEY = "sk-34bde63deba4488c939677b2a93fbb01"
+import streamlit as st
+DEEPSEEK_API_KEY = st.secrets["DEEPSEEK_API_KEY"]
 
 try:
     if DEEPSEEK_API_KEY == "这里填你的DeepSeek key":
